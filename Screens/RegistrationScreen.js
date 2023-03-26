@@ -114,6 +114,11 @@ export default function RegistrationScreen() {
                     onPress={() => (
                       console.log("state: ", { state }), setState(initialState)
                     )}
+                    disabled={
+                      state.email === "" ||
+                      state.password === "" ||
+                      state.login === ""
+                    }
                   >
                     <Text style={styles.btnText}>SIGN UP</Text>
                   </TouchableOpacity>

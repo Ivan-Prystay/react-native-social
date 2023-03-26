@@ -35,7 +35,6 @@ export default function RegistrationScreen() {
           >
             <View style={styles.form}>
               <Text style={styles.formTitle}>Login</Text>
-
               {/* //? E-mail//? E-mail//? E-mail//? E-mail//? E-mail /// */}
               <View>
                 <TextInput
@@ -65,7 +64,6 @@ export default function RegistrationScreen() {
                   }
                 />
               </View>
-
               {!isShowKeyboard && (
                 <View>
                   <TouchableOpacity
@@ -74,10 +72,10 @@ export default function RegistrationScreen() {
                     onPress={() => (
                       console.log("state: ", { state }), setState(initialState)
                     )}
+                    disabled={state.email === "" || state.password === ""}
                   >
                     <Text style={styles.btnText}>SIGN IN</Text>
                   </TouchableOpacity>
-
                   <TouchableOpacity activeOpacity={1} style={styles.link}>
                     <Text style={styles.linkText}>
                       Don't have an account? Register
@@ -103,7 +101,6 @@ const styles = StyleSheet.create({
     resizeMode: "content",
     justifyContent: "flex-end",
   },
-
   form: {
     backgroundColor: "#fff",
     borderTopLeftRadius: 25,
