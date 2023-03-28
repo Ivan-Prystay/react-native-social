@@ -1,11 +1,10 @@
 import { useState } from "react";
-
+import styled from "styled-components/native";
 import Svg, { Circle, Path } from "react-native-svg";
 
 import {
-  ImageBackground,
   TouchableOpacity,
-  StyleSheet,
+  ImageBackground,
   TextInput,
   View,
   Text,
@@ -13,200 +12,208 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  StatusBar,
 } from "react-native";
 
+//*                   STYLED   COMPONENTS           //
+
+const Container = styled(View)`
+  flex: 1;
+  background-color: #fff;
+`;
+const BackgroundImage = styled(ImageBackground)`
+  flex: 1;
+  justify-content: flex-end;
+  background-size: cover;
+`;
+const Form = styled(View)`
+  background-color: #fff;
+  border-top-left-radius: 25px;
+  border-top-right-radius: 25px;
+  padding-bottom: 16px;
+`;
+const FormTitle = styled(Text)`
+  text-align: center;
+  font-size: 30px;
+  font-weight: 500;
+  color: #212121;
+  margin-top: 72px;
+  margin-bottom: 20px;
+`;
+const Input = styled(TextInput)`
+  border-width: 1px;
+  background-color: #f6f6f6;
+  border-radius: 8px;
+  height: 50px;
+  font-size: 16px;
+  margin: 0px 16px 16px;
+  padding: 16px;
+  border-color: ${(props) => (props.isFocused ? "#FF6C00" : "transparent")};
+`;
+const Register = styled(TouchableOpacity)`
+  margin: 27px 16px 0;
+  border-radius: 100px;
+  background-color: ${(props) => (props.disabled ? "lightgray" : "#FF6C00")};
+`;
+const RegisterText = styled(Text)`
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 16px;
+`;
+const Link = styled(TouchableOpacity)`
+  margin: 16px auto 42px;
+`;
+const TextLink = styled(Text)`
+  text-align: center;
+  color: #1b4371;
+  font-size: 16px;
+  font-weight: 400;
+`;
+
+const WrapPhoto = styled(View)`
+  height: 120px;
+  width: 120px;
+  border-radius: 16px;
+  background-color: #f6f6f6;
+  position: absolute;
+  top: -60px;
+  display: flex;
+  align-self: center;
+`;
+
+const AddPhoto = styled(TouchableOpacity)`
+  left: 107px;
+  top: 77px;
+`;
+
+//*             INITIAL   STATE        //
 const initialState = {
   login: "",
   email: "",
   password: "",
 };
 
-export default function RegistrationScreen() {
+export default function RegistrationScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [isFocused1, setIsFocused1] = useState(false);
+  const [isFocused2, setIsFocused2] = useState(false);
+  const [isFocused3, setIsFocused3] = useState(false);
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => (setIsShowKeyboard(false), Keyboard.dismiss())}
-    >
-      <View style={styles.container}>
-        <ImageBackground
-          style={styles.image}
-          source={require("../assets/images/photo_bg.png")}
-        >
-          <KeyboardAvoidingView
-            behavior={Platform.OS == "ios" ? "padding" : ""}
-          >
-            <View style={styles.form}>
-              <View style={styles.photoWrap}>
-                <TouchableOpacity style={styles.addPhoto} activeOpacity={1}>
-                  <Svg
-                    width="25"
-                    height="25"
-                    viewBox="0 0 25 25"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <Circle
-                      cx="12.5"
-                      cy="12.5"
-                      r="12"
-                      fill="#fff"
-                      stroke="#FF6C00"
-                    />
-                    <Path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M13 6H12V12H6V13H12V19H13V13H19V12H13V6Z"
-                      fill="#FF6C00"
-                    />
-                  </Svg>
-                </TouchableOpacity>
-              </View>
-              <Text style={styles.formTitle}>Registartion</Text>
-              {/* //? LOGIN // //? LOGIN // //? LOGIN ////? LOGIN // // */}
-              <View>
-                <TextInput
-                  style={styles.input}
+    <>
+      <StatusBar />
+      <TouchableWithoutFeedback
+        onPress={() => (setIsShowKeyboard(false), Keyboard.dismiss())}
+      >
+        <Container>
+          <BackgroundImage source={require("../assets/images/photo_bg.png")}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS == "ios" ? "padding" : ""}
+            >
+              <Form>
+                <WrapPhoto>
+                  <AddPhoto activeOpacity={1}>
+                    <Svg
+                      width="25"
+                      height="25"
+                      viewBox="0 0 25 25"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <Circle
+                        cx="12.5"
+                        cy="12.5"
+                        r="12"
+                        fill="#fff"
+                        stroke="#FF6C00"
+                      />
+                      <Path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M13 6H12V12H6V13H12V19H13V13H19V12H13V6Z"
+                        fill="#FF6C00"
+                      />
+                    </Svg>
+                  </AddPhoto>
+                </WrapPhoto>
+                <FormTitle>Registartion</FormTitle>
+                {/* //? LOGIN // //? LOGIN // //? LOGIN ////? LOGIN // // */}
+
+                <Input
                   placeholder="Login"
                   value={state.login}
-                  onFocus={() => setIsShowKeyboard(true)}
+                  onFocus={() => (setIsShowKeyboard(true), setIsFocused1(true))}
+                  onBlur={() => setIsFocused1(false)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, login: value }))
                   }
+                  isFocused={isFocused1}
                 />
-              </View>
-              {/* //? E-mail//? E-mail//? E-mail//? E-mail//? E-mail /// */}
-              <View>
-                <TextInput
-                  style={styles.input}
+
+                {/* //? E-mail//? E-mail//? E-mail//? E-mail//? E-mail /// */}
+
+                <Input
                   placeholder="E-mail"
                   value={state.email}
-                  onFocus={() => setIsShowKeyboard(true)}
+                  onFocus={() => (setIsShowKeyboard(true), setIsFocused2(true))}
+                  onBlur={() => setIsFocused2(false)}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
                   }
+                  isFocused={isFocused2}
                 />
-              </View>
-              {/* //? Password //? Password//? Password//? Password//? */}
-              <View>
-                <TextInput
-                  style={styles.input}
+
+                {/* //? Password //? Password//? Password//? Password//? */}
+
+                <Input
                   placeholder="Password"
                   value={state.password}
                   secureTextEntry={true}
-                  onFocus={() => setIsShowKeyboard(true)}
-                  onBlur={() => setIsShowKeyboard(false)}
+                  onFocus={() => (setIsShowKeyboard(true), setIsFocused3(true))}
+                  onBlur={() => (
+                    setIsShowKeyboard(false), setIsFocused3(false)
+                  )}
                   onChangeText={(value) =>
                     setState((prevState) => ({
                       ...prevState,
                       password: value,
                     }))
                   }
+                  isFocused={isFocused3}
                 />
-              </View>
 
-              {!isShowKeyboard && (
-                <View>
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={styles.btn}
-                    onPress={() => (
-                      console.log("state: ", { state }), setState(initialState)
-                    )}
-                    disabled={
-                      state.email === "" ||
-                      state.password === "" ||
-                      state.login === ""
-                    }
-                  >
-                    <Text style={styles.btnText}>SIGN UP</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity activeOpacity={1} style={styles.link}>
-                    <Text style={styles.linkText}>
-                      Already have an account? Entry
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-          </KeyboardAvoidingView>
-        </ImageBackground>
-      </View>
-    </TouchableWithoutFeedback>
+                {!isShowKeyboard && (
+                  <>
+                    <Register
+                      activeOpacity={0.8}
+                      onPress={() => (
+                        console.log("state: ", { state }),
+                        setState(initialState)
+                      )}
+                      disabled={
+                        state.email === "" ||
+                        state.password === "" ||
+                        state.login === ""
+                      }
+                    >
+                      <RegisterText>SIGN UP</RegisterText>
+                    </Register>
+                    <Link
+                      onPress={() => navigation.navigate("Login")}
+                      activeOpacity={0.5}
+                    >
+                      <TextLink>Already have an account? Entry</TextLink>
+                    </Link>
+                  </>
+                )}
+              </Form>
+            </KeyboardAvoidingView>
+          </BackgroundImage>
+        </Container>
+      </TouchableWithoutFeedback>
+    </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-  image: {
-    flex: 1,
-    resizeMode: "content",
-    justifyContent: "flex-end",
-  },
-
-  form: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    paddingBottom: 16,
-  },
-  formTitle: {
-    textAlign: "center",
-    fontSize: 30,
-    fontWeight: 500,
-    color: "#212121",
-    marginTop: 72,
-    marginBottom: 20,
-  },
-  input: {
-    backgroundColor: "#F6F6F6",
-    borderRadius: 8,
-    height: 50,
-    fontSize: 16,
-    marginHorizontal: 16,
-    marginBottom: 16,
-    padding: 16,
-  },
-  btn: {
-    marginTop: 27,
-    marginHorizontal: 16,
-    backgroundColor: "#FF6C00",
-    borderRadius: 100,
-  },
-  btnText: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: 16,
-    fontWeight: 400,
-    padding: 16,
-  },
-  link: {
-    marginTop: 16,
-    marginBottom: 42,
-  },
-  linkText: {
-    textAlign: "center",
-    color: "#1B4371",
-    fontSize: 16,
-    fontWeight: 400,
-  },
-  photoWrap: {
-    height: 120,
-    width: 120,
-    borderRadius: 16,
-    backgroundColor: "#F6F6F6",
-    position: "absolute",
-    top: -60,
-    display: "flex",
-    alignSelf: "center",
-  },
-  addPhoto: {
-    left: 107,
-    top: 77,
-  },
-});
