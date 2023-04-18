@@ -58,7 +58,7 @@ export default function Home({ navigation }) {
           ),
           headerTitleAlign: "center",
         }}
-        name="POSTS"
+        name="Posts"
         component={PostsScreen}
       />
 
