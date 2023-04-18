@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-
+import React, { useState, useEffect, useCallback } from "react";
+import { useIsFocused } from "@react-navigation/native";
 import styled from "styled-components/native";
 import {
   TouchableOpacity,
@@ -24,14 +24,16 @@ const initialState = {
 
 export default function CreatePostsScreen({ navigation }) {
   const [state, setState] = useState(initialState);
-
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isFocused1, setIsFocused1] = useState(false);
   const [isFocused2, setIsFocused2] = useState(false);
+  const [location, setLocation] = useState(null);
 
-  const takePhoto = async () => {
+  const isFocused = useIsFocused();
+
+  const takePhoto = useCallback(async () => {
     try {
       const picture = await camera.takePictureAsync();
       const location = await Location.getCurrentPositionAsync();
@@ -40,15 +42,15 @@ export default function CreatePostsScreen({ navigation }) {
     } catch (error) {
       console.log("error: ", error.message);
     }
-  };
+  }, [camera]);
 
-  const sendPhoto = () => {
+  const sendPhoto = useCallback(() => {
     if (photo === null) {
       return;
     }
     navigation.navigate("Posts", { photo });
     setPhoto(null);
-  };
+  }, [navigation, photo]);
 
   useEffect(() => {
     (async () => {
@@ -57,7 +59,6 @@ export default function CreatePostsScreen({ navigation }) {
         setErrorMsg("Permission to access location was denied");
         return;
       }
-
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
     })();
@@ -73,16 +74,18 @@ export default function CreatePostsScreen({ navigation }) {
           <KeyboardAvoidingView
             behavior={Platform.OS == "ios" ? "padding" : ""}
           >
-            <CameraStyled ref={setCamera}>
-              {photo && (
-                <TakePhotoContainer>
-                  <TakePhotoImage source={{ uri: photo }} />
-                </TakePhotoContainer>
-              )}
-              <SnapBtn onPress={takePhoto}>
-                <TextSnapBtn>SNAP</TextSnapBtn>
-              </SnapBtn>
-            </CameraStyled>
+            {isFocused && (
+              <CameraStyled ref={setCamera}>
+                {photo && (
+                  <TakePhotoContainer>
+                    <TakePhotoImage source={{ uri: photo }} />
+                  </TakePhotoContainer>
+                )}
+                <SnapBtn onPress={takePhoto}>
+                  <TextSnapBtn>SNAP</TextSnapBtn>
+                </SnapBtn>
+              </CameraStyled>
+            )}
             <View>
               <TextInput
                 placeholder="Назва"
