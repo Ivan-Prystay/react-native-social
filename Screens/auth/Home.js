@@ -65,6 +65,7 @@ export default function Home({ navigation }) {
       <MainTab.Screen
         options={{
           headerTitleAlign: "center",
+          tabBarStyle: { display: "none" },
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, size, color }) => (
             <Svg
@@ -73,7 +74,6 @@ export default function Home({ navigation }) {
               viewBox="0 0 70 40"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              opacity={focused ? 1 : 0.5}
             >
               <Rect width="70" height="40" rx="20" fill="#FF6C00" />
               <Path
