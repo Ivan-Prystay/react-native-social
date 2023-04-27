@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import styled from "styled-components/native";
+
+import { Input, Icon } from "react-native-elements";
 import {
   TouchableOpacity,
   View,
@@ -87,17 +89,8 @@ export default function CreatePostsScreen({ navigation }) {
               </CameraStyled>
             )}
             <View>
-              <TextInput
-                placeholder="Назва"
-                style={{
-                  backgroundColor: "lime",
-                  borderWidth: 1,
-                  borderColor: "red",
-                  marginHorizontal: 20,
-                  marginTop: 10,
-                  borderRadius: 5,
-                  padding: 0,
-                }}
+              {/* <InputStyle
+                placeholder="Назва..."
                 value={state.name}
                 onFocus={() => (setIsShowKeyboard(true), setIsFocused1(true))}
                 onBlur={() => setIsFocused1(false)}
@@ -105,8 +98,8 @@ export default function CreatePostsScreen({ navigation }) {
                   setState((prevState) => ({ ...prevState, name: value }))
                 }
                 isFocused={isFocused1}
-              />
-              <TextInput
+              /> */}
+              {/* <InputStyle
                 value={state.location}
                 onFocus={() => (setIsShowKeyboard(true), setIsFocused2(true))}
                 onBlur={() => (setIsShowKeyboard(false), setIsFocused2(false))}
@@ -117,17 +110,15 @@ export default function CreatePostsScreen({ navigation }) {
                   }))
                 }
                 isFocused={isFocused2}
-                placeholder="Місцевість"
-                style={{
-                  backgroundColor: "lime",
-                  borderWidth: 1,
-                  borderColor: "red",
-                  marginHorizontal: 20,
-                  marginTop: 10,
-                  borderRadius: 5,
-                  padding: 0,
-                }}
+                placeholder="Місцевість..."
+              /> */}
+              <Input placeholder="Назва..." />
+
+              <Input
+                placeholder="Місцевість..."
+                leftIcon={<Icon name="location-pin" size={24} color="black" />}
               />
+
               <SendPhotoBtn onPress={sendPhoto}>
                 <TextSendPhotoBtn>SEND</TextSendPhotoBtn>
               </SendPhotoBtn>
@@ -139,15 +130,21 @@ export default function CreatePostsScreen({ navigation }) {
   );
 }
 
+// const InputStyle = styled(TextInput)`
+//   margin: 0 20px;
+//   border: 0 solid gray;
+//   border-bottom-width: 1px;
+// `;
+
 const Container = styled(View)`
   flex: 1;
   background-color: #e5e5e5;
+  padding: 32px 16px;
 `;
 
 const CameraStyled = styled(Camera)`
   align-items: center;
   justify-content: flex-end;
-  margin: 0 10px;
   height: 70%;
 `;
 const SnapBtn = styled(TouchableOpacity)`
