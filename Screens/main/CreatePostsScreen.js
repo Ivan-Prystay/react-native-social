@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import styled from "styled-components/native";
 
@@ -9,7 +9,6 @@ import {
   StatusBar,
   Text,
   Image,
-  TextInput,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
@@ -35,25 +34,24 @@ export default function CreatePostsScreen({ navigation }) {
 
   const isFocused = useIsFocused();
 
-  const takePhoto = useCallback(async () => {
+  const takePhoto = async () => {
     try {
       const picture = await camera.takePictureAsync();
+      setPhoto(picture.uri);
       const location = await Location.getCurrentPositionAsync();
       console.log("location: ", location);
-      setPhoto(picture.uri);
     } catch (error) {
       console.log("error: ", error.message);
     }
-  }, [camera]);
+  };
 
-  const sendPhoto = useCallback(() => {
+  const sendPhoto = async () => {
     if (photo === null) {
       return;
     }
     navigation.navigate("Posts", { photo });
     setPhoto(null);
-  }, [navigation, photo]);
-
+  };
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -77,16 +75,18 @@ export default function CreatePostsScreen({ navigation }) {
             behavior={Platform.OS == "ios" ? "padding" : ""}
           >
             {isFocused && (
-              <CameraStyled ref={setCamera}>
-                {photo && (
-                  <TakePhotoContainer>
-                    <TakePhotoImage source={{ uri: photo }} />
-                  </TakePhotoContainer>
-                )}
-                <SnapBtn onPress={takePhoto}>
-                  <TextSnapBtn>SNAP</TextSnapBtn>
-                </SnapBtn>
-              </CameraStyled>
+              <CameraContainer>
+                <CameraStyled ref={setCamera}>
+                  {photo && (
+                    <TakePhotoContainer>
+                      <TakePhotoImage source={{ uri: photo }} />
+                    </TakePhotoContainer>
+                  )}
+                  <SnapBtn onPress={takePhoto}>
+                    <TextSnapBtn>SNAP</TextSnapBtn>
+                  </SnapBtn>
+                </CameraStyled>
+              </CameraContainer>
             )}
             <View>
               {/* <InputStyle
@@ -130,11 +130,9 @@ export default function CreatePostsScreen({ navigation }) {
   );
 }
 
-// const InputStyle = styled(TextInput)`
-//   margin: 0 20px;
-//   border: 0 solid gray;
-//   border-bottom-width: 1px;
-// `;
+const InputStyle = styled(Input)`
+  border: red solid 2px;
+`;
 
 const Container = styled(View)`
   flex: 1;
@@ -142,17 +140,19 @@ const Container = styled(View)`
   padding: 32px 16px;
 `;
 
+const CameraContainer = styled(View)`
+  border-radius: 20px;
+  overflow: hidden;
+`;
+
 const CameraStyled = styled(Camera)`
   align-items: center;
-  justify-content: flex-end;
-  height: 70%;
+  justify-content: center;
 `;
 const SnapBtn = styled(TouchableOpacity)`
   border: 1px solid white;
   border-radius: 35px;
   margin-top: 200px;
-  /* padding: 5px 10px; */
-  /* background-color: coral; */
   width: 70px;
   height: 70px;
   justify-content: center;
