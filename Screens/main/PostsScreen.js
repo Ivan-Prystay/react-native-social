@@ -28,7 +28,7 @@ export default function PostsScreen({ route }) {
               <Image
                 source={{ uri: item.photo }}
                 style={{
-                  height: 200,
+                  height: 350,
                   marginHorizontal: 10,
                   marginTop: 10,
                   padding: 25,

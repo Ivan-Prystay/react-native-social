@@ -3,6 +3,8 @@ import { useIsFocused } from "@react-navigation/native";
 import styled from "styled-components/native";
 
 import { Input, Icon } from "react-native-elements";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 import {
   TouchableOpacity,
   View,
@@ -12,6 +14,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  ScrollView,
 } from "react-native";
 
 import * as Location from "expo-location";
@@ -20,7 +23,7 @@ import { Camera } from "expo-camera";
 
 const initialState = {
   name: "",
-  location: "",
+  locationName: "",
 };
 
 export default function CreatePostsScreen({ navigation }) {
@@ -28,8 +31,6 @@ export default function CreatePostsScreen({ navigation }) {
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const [isFocused1, setIsFocused1] = useState(false);
-  const [isFocused2, setIsFocused2] = useState(false);
   const [location, setLocation] = useState(null);
 
   const isFocused = useIsFocused();
@@ -46,10 +47,16 @@ export default function CreatePostsScreen({ navigation }) {
   };
 
   const sendPhoto = async () => {
+    if (state.name === "" || state.locationName === "") {
+      alert("Заповніть назву та місцевість");
+      return;
+    }
     if (photo === null) {
+      alert("Фото відсутнє");
       return;
     }
     navigation.navigate("Posts", { photo });
+    setState(initialState);
     setPhoto(null);
   };
   useEffect(() => {
@@ -67,72 +74,68 @@ export default function CreatePostsScreen({ navigation }) {
   return (
     <>
       <StatusBar />
-      <TouchableWithoutFeedback
-        onPress={() => (setIsShowKeyboard(false), Keyboard.dismiss())}
-      >
-        <Container>
-          <KeyboardAvoidingView
-            behavior={Platform.OS == "ios" ? "padding" : ""}
-          >
-            {isFocused && (
-              <CameraContainer>
-                <CameraStyled ref={setCamera}>
-                  {photo && (
-                    <TakePhotoContainer>
-                      <TakePhotoImage source={{ uri: photo }} />
-                    </TakePhotoContainer>
+      <ScrollView>
+        <TouchableWithoutFeedback
+          onPress={() => (setIsShowKeyboard(false), Keyboard.dismiss())}
+        >
+          <Container>
+            <KeyboardAvoidingView
+              behavior={Platform.OS == "ios" ? "padding" : ""}
+            >
+              {isFocused && (
+                <CameraContainer>
+                  {photo ? (
+                    <TakePhotoImage source={{ uri: photo }} />
+                  ) : (
+                    <CameraStyled ref={setCamera}></CameraStyled>
                   )}
-                  <SnapBtn onPress={takePhoto}>
-                    <TextSnapBtn>SNAP</TextSnapBtn>
+                  <SnapBtn photo={photo} onPress={takePhoto}>
+                    <Ionicons
+                      // photo
+                      name="camera"
+                      size={50}
+                      color={photo ? "#FFFFFF" : "#BDBDBD"}
+                    ></Ionicons>
                   </SnapBtn>
-                </CameraStyled>
-              </CameraContainer>
-            )}
-            <View>
-              {/* <InputStyle
-                placeholder="Назва..."
-                value={state.name}
-                onFocus={() => (setIsShowKeyboard(true), setIsFocused1(true))}
-                onBlur={() => setIsFocused1(false)}
-                onChangeText={(value) =>
-                  setState((prevState) => ({ ...prevState, name: value }))
-                }
-                isFocused={isFocused1}
-              /> */}
-              {/* <InputStyle
-                value={state.location}
-                onFocus={() => (setIsShowKeyboard(true), setIsFocused2(true))}
-                onBlur={() => (setIsShowKeyboard(false), setIsFocused2(false))}
-                onChangeText={(value) =>
-                  setState((prevState) => ({
-                    ...prevState,
-                    location: value,
-                  }))
-                }
-                isFocused={isFocused2}
-                placeholder="Місцевість..."
-              /> */}
-              <Input placeholder="Назва..." />
+                </CameraContainer>
+              )}
 
-              <Input
-                placeholder="Місцевість..."
-                leftIcon={<Icon name="location-pin" size={24} color="black" />}
-              />
+              <TouchableOpacity onPress={() => setPhoto(null)}>
+                <Text>Edit photo</Text>
+              </TouchableOpacity>
 
-              <SendPhotoBtn onPress={sendPhoto}>
-                <TextSendPhotoBtn>SEND</TextSendPhotoBtn>
-              </SendPhotoBtn>
-            </View>
-          </KeyboardAvoidingView>
-        </Container>
-      </TouchableWithoutFeedback>
+              <View>
+                <Input
+                  value={state.name}
+                  placeholder="Назва..."
+                  onChangeText={(value) =>
+                    setState((prevState) => ({ ...prevState, name: value }))
+                  }
+                />
+                <Input
+                  value={state.locationName}
+                  placeholder="Місцевість..."
+                  leftIcon={
+                    <Icon name="location-pin" size={24} color="#BDBDBD" />
+                  }
+                  onChangeText={(value) =>
+                    setState((prevState) => ({
+                      ...prevState,
+                      locationName: value,
+                    }))
+                  }
+                />
+                <SendPhotoBtn onPress={sendPhoto}>
+                  <TextSendPhotoBtn>SEND</TextSendPhotoBtn>
+                </SendPhotoBtn>
+              </View>
+            </KeyboardAvoidingView>
+          </Container>
+        </TouchableWithoutFeedback>
+      </ScrollView>
     </>
   );
 }
-
-const InputStyle = styled(Input)`
-  border: red solid 2px;
-`;
 
 const Container = styled(View)`
   flex: 1;
@@ -146,21 +149,25 @@ const CameraContainer = styled(View)`
 `;
 
 const CameraStyled = styled(Camera)`
-  align-items: center;
-  justify-content: center;
+  height: 350px;
 `;
+
+const TakePhotoImage = styled(Image)`
+  height: 350px;
+`;
+
 const SnapBtn = styled(TouchableOpacity)`
-  border: 1px solid white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -35px;
+  margin-left: -35px;
   border-radius: 35px;
-  margin-top: 200px;
   width: 70px;
   height: 70px;
   justify-content: center;
   align-items: center;
-`;
-const TextSnapBtn = styled(Text)`
-  color: white;
-  font-size: 18px;
+  background-color: ${({ photo }) => (photo ? "#FFFFFF4D" : "#ffffff")};
 `;
 
 const SendPhotoBtn = styled(TouchableOpacity)`
@@ -174,19 +181,4 @@ const SendPhotoBtn = styled(TouchableOpacity)`
 const TextSendPhotoBtn = styled(Text)`
   color: black;
   font-size: 20px;
-`;
-
-const TakePhotoContainer = styled(View)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  border: 2px solid white;
-  border-radius: 35px;
-  padding: 5px;
-  background-color: white;
-`;
-
-const TakePhotoImage = styled(Image)`
-  width: 150px;
-  height: 150px;
 `;
