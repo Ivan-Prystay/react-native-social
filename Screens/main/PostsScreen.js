@@ -1,10 +1,17 @@
-import styled from "styled-components/native";
-import { View, StatusBar, FlatList, Image } from "react-native";
 import { useEffect, useState } from "react";
+
+import { View, StatusBar, FlatList, Image, Text } from "react-native";
+
+import styled from "styled-components/native";
+
+import SimpleLineIcon from "react-native-vector-icons/SimpleLineIcons";
+
+import FeatherIcon from "react-native-vector-icons/Fontisto";
+
 export default function PostsScreen({ route }) {
   const [posts, setPosts] = useState([]);
   console.log("STATE POSTS", posts);
-  console.log("STATE POSTS", posts.length);
+  console.log("STATE POSTS length", posts.length);
 
   useEffect(() => {
     if (
@@ -34,9 +41,20 @@ export default function PostsScreen({ route }) {
                   padding: 25,
                   borderWidth: 3,
                   borderRadius: 45,
-                  borderColor: "lime",
                 }}
               />
+              <Text>{item.state.name}</Text>
+
+              <View style={{ flexDirection: "row" }}>
+                <FeatherIcon
+                  name="comment"
+                  style={{ transform: [{ scaleX: -1 }], marginRight: 40 }}
+                />
+                <SimpleLineIcon name="location-pin" size={24} color="#BDBDBD" />
+                <Text style={{ marginLeft: 40 }}>
+                  {item.state.locationName}
+                </Text>
+              </View>
             </View>
           )}
         />

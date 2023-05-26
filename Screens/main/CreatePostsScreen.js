@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import styled from "styled-components/native";
 
-import { Input, Icon } from "react-native-elements";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Input } from "react-native-elements";
+import Ionicon from "react-native-vector-icons/Ionicons";
+import SimpleLineIcon from "react-native-vector-icons/SimpleLineIcons";
 
 import {
   TouchableOpacity,
@@ -47,15 +48,7 @@ export default function CreatePostsScreen({ navigation }) {
   };
 
   const sendPhoto = async () => {
-    if (state.name === "" || state.locationName === "") {
-      alert("Заповніть назву та місцевість");
-      return;
-    }
-    if (photo === null) {
-      alert("Фото відсутнє");
-      return;
-    }
-    navigation.navigate("Posts", { photo });
+    navigation.navigate("Posts", { photo, state });
     setState(initialState);
     setPhoto(null);
   };
@@ -90,19 +83,24 @@ export default function CreatePostsScreen({ navigation }) {
                     <CameraStyled ref={setCamera}></CameraStyled>
                   )}
                   <SnapBtn photo={photo} onPress={takePhoto}>
-                    <Ionicons
+                    <Ionicon
                       // photo
                       name="camera"
                       size={50}
                       color={photo ? "#FFFFFF" : "#BDBDBD"}
-                    ></Ionicons>
+                    ></Ionicon>
                   </SnapBtn>
                 </CameraContainer>
               )}
-
-              <TouchableOpacity onPress={() => setPhoto(null)}>
-                <Text>Edit photo</Text>
-              </TouchableOpacity>
+              {photo ? (
+                <TouchableOpacity onPress={() => setPhoto(null)}>
+                  <Text>Edit photo</Text>
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => setPhoto(null)}>
+                  <Text>Dowload photo</Text>
+                </TouchableOpacity>
+              )}
 
               <View>
                 <Input
@@ -116,7 +114,11 @@ export default function CreatePostsScreen({ navigation }) {
                   value={state.locationName}
                   placeholder="Місцевість..."
                   leftIcon={
-                    <Icon name="location-pin" size={24} color="#BDBDBD" />
+                    <SimpleLineIcon
+                      name="location-pin"
+                      size={24}
+                      color="#BDBDBD"
+                    />
                   }
                   onChangeText={(value) =>
                     setState((prevState) => ({
@@ -125,8 +127,15 @@ export default function CreatePostsScreen({ navigation }) {
                     }))
                   }
                 />
-                <SendPhotoBtn onPress={sendPhoto}>
-                  <TextSendPhotoBtn>SEND</TextSendPhotoBtn>
+                <SendPhotoBtn
+                  onPress={sendPhoto}
+                  disabled={
+                    state.name === "" ||
+                    state.locationName === "" ||
+                    photo === null
+                  }
+                >
+                  <TextSendPhotoBtn>Published</TextSendPhotoBtn>
                 </SendPhotoBtn>
               </View>
             </KeyboardAvoidingView>
@@ -171,14 +180,28 @@ const SnapBtn = styled(TouchableOpacity)`
 `;
 
 const SendPhotoBtn = styled(TouchableOpacity)`
-  border: solid 2px orange;
-  align-items: center;
-  margin: 15px 20px 0;
-  padding: 5px;
-  border-radius: 10px;
+  margin: 27px 16px 0;
+  border-radius: 100px;
+  background-color: ${(props) => (props.disabled ? "#d3d3d3" : "#FF6C00")};
 `;
 
 const TextSendPhotoBtn = styled(Text)`
-  color: black;
-  font-size: 20px;
+  color: #fff;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 16px;
 `;
+
+// const Register = styled(TouchableOpacity)`
+//   margin: 27px 16px 0;
+//   border-radius: 100px;
+//   background-color: ${(props) => (props.disabled ? "#d3d3d3" : "#FF6C00")};
+// `;
+// const RegisterText = styled(Text)`
+//   color: #fff;
+//   text-align: center;
+//   font-size: 16px;
+//   font-weight: 400;
+//   padding: 16px;
+// `;
