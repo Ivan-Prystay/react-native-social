@@ -1,10 +1,12 @@
 import styled from "styled-components/native";
-import { View, StatusBar } from "react-native";
+import { View, StatusBar, Text } from "react-native";
 export default function CommentsScreen() {
   return (
     <>
       <StatusBar />
-      <Container></Container>
+      <Container>
+        <Text>Comments Screen</Text>
+      </Container>
     </>
   );
 }

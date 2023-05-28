@@ -40,18 +40,20 @@ export default function CreatePostsScreen({ navigation }) {
     try {
       const picture = await camera.takePictureAsync();
       setPhoto(picture.uri);
-      const location = await Location.getCurrentPositionAsync();
-      console.log("location: ", location);
+      // const location = await Location.getCurrentPositionAsync();
+      // console.log("location: ", location);
     } catch (error) {
       console.log("error: ", error.message);
     }
   };
 
   const sendPhoto = async () => {
-    navigation.navigate("Posts", { photo, state });
+    setLocation(location);
+    navigation.navigate("Post", { photo, state, location });
     setState(initialState);
     setPhoto(null);
   };
+
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -82,7 +84,11 @@ export default function CreatePostsScreen({ navigation }) {
                   ) : (
                     <CameraStyled ref={setCamera}></CameraStyled>
                   )}
-                  <SnapBtn photo={photo} onPress={takePhoto}>
+                  <SnapBtn
+                    disabled={photo !== null}
+                    photo={photo}
+                    onPress={takePhoto}
+                  >
                     <Ionicon
                       // photo
                       name="camera"
@@ -192,16 +198,3 @@ const TextSendPhotoBtn = styled(Text)`
   font-weight: 400;
   padding: 16px;
 `;
-
-// const Register = styled(TouchableOpacity)`
-//   margin: 27px 16px 0;
-//   border-radius: 100px;
-//   background-color: ${(props) => (props.disabled ? "#d3d3d3" : "#FF6C00")};
-// `;
-// const RegisterText = styled(Text)`
-//   color: #fff;
-//   text-align: center;
-//   font-size: 16px;
-//   font-weight: 400;
-//   padding: 16px;
-// `;
