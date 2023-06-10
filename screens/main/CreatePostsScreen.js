@@ -30,6 +30,8 @@ const initialState = {
 export default function CreatePostsScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [camera, setCamera] = useState(null);
+  const [isCameraRunning, setIsCameraRunning] = useState(false);
+
   const [photo, setPhoto] = useState(null);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [location, setLocation] = useState(null);
@@ -37,14 +39,20 @@ export default function CreatePostsScreen({ navigation }) {
   const isFocused = useIsFocused();
 
   const takePhoto = async () => {
+    if (!isCameraRunning) {
+      return;
+    }
+
     try {
       const picture = await camera.takePictureAsync();
       setPhoto(picture.uri);
-      // const location = await Location.getCurrentPositionAsync();
-      // console.log("location: ", location);
     } catch (error) {
-      console.log("error: ", error.message);
+      console.log("Помилка: ", error.message);
     }
+  };
+
+  const handleCameraReady = () => {
+    setIsCameraRunning(true);
   };
 
   const sendPhoto = async () => {
@@ -82,7 +90,10 @@ export default function CreatePostsScreen({ navigation }) {
                   {photo ? (
                     <TakePhotoImage source={{ uri: photo }} />
                   ) : (
-                    <CameraStyled ref={setCamera}></CameraStyled>
+                    <CameraStyled
+                      ref={setCamera}
+                      onCameraReady={handleCameraReady}
+                    ></CameraStyled>
                   )}
                   <SnapBtn
                     disabled={photo !== null}

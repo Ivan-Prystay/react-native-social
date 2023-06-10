@@ -10,12 +10,13 @@ import { Provider } from "react-redux";
 import RegistrationScreen from "./screens/auth/RegistrationScreen";
 import LoginScreen from "./screens/auth/LoginScreen";
 import Home from "./screens/auth/Home";
+import { store } from "./redux/store";
 
 const AuthStack = createStackNavigator();
 
 const App = () => {
   return (
-    <Provider store={}>
+    <Provider store={store}>
       <NavigationContainer>
         <AuthStack.Navigator initialRouteName="Login">
           <AuthStack.Screen
