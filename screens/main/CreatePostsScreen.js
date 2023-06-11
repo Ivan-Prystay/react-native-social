@@ -1,6 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useIsFocused } from "@react-navigation/native";
 import styled from "styled-components/native";
+
+import * as Location from "expo-location";
+import { Camera } from "expo-camera";
 
 import { Input } from "react-native-elements";
 import Ionicon from "react-native-vector-icons/Ionicons";
@@ -18,52 +21,28 @@ import {
   ScrollView,
 } from "react-native";
 
-import * as Location from "expo-location";
-
-import { Camera } from "expo-camera";
-
 const initialState = {
   name: "",
   locationName: "",
 };
 
 export default function CreatePostsScreen({ navigation }) {
-  const [state, setState] = useState(initialState);
-  const [camera, setCamera] = useState(null);
-  const [isCameraRunning, setIsCameraRunning] = useState(false);
+  let cameraRef = useRef();
 
+  const [hasCameraPermission, setHasCameraPermission] = useState();
+  const [state, setState] = useState(initialState);
   const [photo, setPhoto] = useState(null);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [location, setLocation] = useState(null);
 
   const isFocused = useIsFocused();
-
-  const takePhoto = async () => {
-    if (!isCameraRunning) {
-      return;
-    }
-
-    try {
-      const picture = await camera.takePictureAsync();
-      setPhoto(picture.uri);
-    } catch (error) {
-      console.log("Помилка: ", error.message);
-    }
-  };
-
-  const handleCameraReady = () => {
-    setIsCameraRunning(true);
-  };
-
-  const sendPhoto = async () => {
-    setLocation(location);
-    navigation.navigate("Post", { photo, state, location });
-    setState(initialState);
-    setPhoto(null);
-  };
+  console.log("isFocused: ", isFocused);
 
   useEffect(() => {
     (async () => {
+      const cameraPermission = await Camera.requestCameraPermissionsAsync();
+      setHasCameraPermission(cameraPermission.status === "granted");
+
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
@@ -73,6 +52,34 @@ export default function CreatePostsScreen({ navigation }) {
       setLocation(location);
     })();
   }, []);
+
+  if (hasCameraPermission === undefined) {
+    return <Text>Requesting permissions...</Text>;
+  } else if (!hasCameraPermission) {
+    return (
+      <Text>
+        Permission for camera not granted. Please change this in settings.
+      </Text>
+    );
+  }
+
+  const takePhoto = async () => {
+    try {
+      const picture = await cameraRef.current.takePictureAsync();
+      setPhoto(picture.uri);
+      // const location = await Location.getCurrentPositionAsync();
+      // console.log("location: ", location);
+    } catch (error) {
+      console.log("error: ", error.message);
+    }
+  };
+
+  const sendPhoto = async () => {
+    setLocation(location);
+    navigation.navigate("Post", { photo, state, location });
+    setState(initialState);
+    setPhoto(null);
+  };
 
   return (
     <>
@@ -90,10 +97,7 @@ export default function CreatePostsScreen({ navigation }) {
                   {photo ? (
                     <TakePhotoImage source={{ uri: photo }} />
                   ) : (
-                    <CameraStyled
-                      ref={setCamera}
-                      onCameraReady={handleCameraReady}
-                    ></CameraStyled>
+                    <CameraStyled ref={cameraRef}></CameraStyled>
                   )}
                   <SnapBtn
                     disabled={photo !== null}
@@ -118,7 +122,6 @@ export default function CreatePostsScreen({ navigation }) {
                   <Text>Dowload photo</Text>
                 </TouchableOpacity>
               )}
-
               <View>
                 <Input
                   value={state.name}
