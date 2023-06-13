@@ -28,15 +28,13 @@ const initialState = {
 
 export default function CreatePostsScreen({ navigation }) {
   let cameraRef = useRef();
+  const isFocused = useIsFocused();
 
   const [hasCameraPermission, setHasCameraPermission] = useState();
   const [state, setState] = useState(initialState);
   const [photo, setPhoto] = useState(null);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [location, setLocation] = useState(null);
-
-  const isFocused = useIsFocused();
-  console.log("isFocused: ", isFocused);
 
   useEffect(() => {
     (async () => {
