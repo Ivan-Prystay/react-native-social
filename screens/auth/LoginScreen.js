@@ -27,6 +27,14 @@ export default function LoginScreen({ navigation }) {
   const [isFocused1, setIsFocused1] = useState(false);
   const [isFocused2, setIsFocused2] = useState(false);
 
+  const handleLogIn = () => {
+    // Логіка реєстрації
+    // Перехід на наступний екран після реєстрації
+    setState(initialState);
+    navigation.navigate("Home", { screen: "Posts" });
+    console.log("state: ", { state });
+  };
+
   return (
     <>
       <StatusBar />
@@ -77,20 +85,16 @@ export default function LoginScreen({ navigation }) {
                   <>
                     <Login
                       activeOpacity={0.8}
-                      onPress={() => (
-                        console.log("state: ", { state }),
-                        navigation.navigate("Home",   
-                        {screen:"Posts"}
-                        
-                        ),
-                        setState(initialState)
-                      )}
+                      onPress={handleLogIn}
                       disabled={state.email === "" || state.password === ""}
                     >
                       <LoginText>SIGN IN</LoginText>
                     </Login>
                     <Link
-                      onPress={() => navigation.navigate("Registration")}
+                      onPress={() => (
+                        navigation.navigate("Registration"),
+                        setState(initialState)
+                      )}
                       activeOpacity={0.5}
                     >
                       <TextLink>Don't have an account? Register</TextLink>

@@ -15,10 +15,14 @@ import {
   StatusBar,
 } from "react-native";
 
+import { useDispatch } from "react-redux";
+
+import { authSignUpUser } from "../../redux/auth/authOperations";
+
 //*             INITIAL   STATE        //
 
 const initialState = {
-  login: "",
+  nickname: "",
   email: "",
   password: "",
 };
@@ -29,6 +33,17 @@ export default function RegistrationScreen({ navigation }) {
   const [isFocused1, setIsFocused1] = useState(false);
   const [isFocused2, setIsFocused2] = useState(false);
   const [isFocused3, setIsFocused3] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const handleRegistration = () => {
+    dispatch(authSignUpUser(state));
+    // Логіка реєстрації
+    // Перехід на наступний екран після реєстрації
+    setState(initialState),
+      navigation.navigate("Home", { screen: "Posts" }),
+      console.log("state: ", { state });
+  };
 
   return (
     <>
@@ -72,11 +87,11 @@ export default function RegistrationScreen({ navigation }) {
 
                 <Input
                   placeholder="Login"
-                  value={state.login}
+                  value={state.nickname}
                   onFocus={() => (setIsShowKeyboard(true), setIsFocused1(true))}
                   onBlur={() => setIsFocused1(false)}
                   onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, login: value }))
+                    setState((prevState) => ({ ...prevState, nickname: value }))
                   }
                   isFocused={isFocused1}
                 />
@@ -112,27 +127,23 @@ export default function RegistrationScreen({ navigation }) {
                   }
                   isFocused={isFocused3}
                 />
-
                 {!isShowKeyboard && (
                   <>
                     <Register
                       activeOpacity={0.8}
-                      onPress={() => (
-                        console.log("state: ", { state }),
-                        navigation.navigate("Home"),
-                        { screen: "Posts" },
-                        setState(initialState)
-                      )}
+                      onPress={handleRegistration}
                       disabled={
                         state.email === "" ||
-                        state.password === "" ||
-                        state.login === ""
+                        state.nickname === "" ||
+                        state.password === ""
                       }
                     >
                       <RegisterText>SIGN UP</RegisterText>
                     </Register>
                     <Link
-                      onPress={() => navigation.navigate("Login")}
+                      onPress={() => (
+                        navigation.navigate("Login"), setState(initialState)
+                      )}
                       activeOpacity={0.5}
                     >
                       <TextLink>Already have an account? Entry</TextLink>
