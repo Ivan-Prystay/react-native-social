@@ -4,6 +4,8 @@ import MapView, { Marker } from "react-native-maps";
 export default function MapScreen({ route }) {
   const { latitude, longitude } = route.params.item?.location?.coords || {};
 
+  const date = Date(route.params.item.location.timestamp);
+
   const { locationName, name } = route.params.item?.state;
 
   return (
@@ -17,7 +19,7 @@ export default function MapScreen({ route }) {
       }}
     >
       <Marker
-        title={name}
+        title={`${name}, ${locationName}, ${date}`}
         coordinate={{ latitude: latitude, longitude: longitude }}
       />
     </MapView>

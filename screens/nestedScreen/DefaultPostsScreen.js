@@ -17,8 +17,6 @@ import FeatherIcon from "react-native-vector-icons/Fontisto";
 
 export default function DefaultPostsScreen({ route, navigation }) {
   const [posts, setPosts] = useState([]);
-  console.log("STATE POSTS", posts);
-  console.log(`Зараз у базі є "${posts.length}" знімки(-ів)`);
 
   useEffect(() => {
     if (

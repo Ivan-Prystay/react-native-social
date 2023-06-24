@@ -14,6 +14,9 @@ import {
   StatusBar,
 } from "react-native";
 
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../redux/auth/authOperations";
+
 //*             INITIAL   STATE        //
 
 const initialState = {
@@ -27,12 +30,14 @@ export default function LoginScreen({ navigation }) {
   const [isFocused1, setIsFocused1] = useState(false);
   const [isFocused2, setIsFocused2] = useState(false);
 
+  const dispatch = useDispatch();
+
   const handleLogIn = () => {
+    dispatch(authSignInUser(state));
     // Логіка реєстрації
     // Перехід на наступний екран після реєстрації
     setState(initialState);
-    navigation.navigate("Home", { screen: "Posts" });
-    console.log("state: ", { state });
+    // navigation.navigate("Home", { screen: "Posts" });
   };
 
   return (

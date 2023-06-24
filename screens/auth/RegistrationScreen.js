@@ -40,9 +40,8 @@ export default function RegistrationScreen({ navigation }) {
     dispatch(authSignUpUser(state));
     // Логіка реєстрації
     // Перехід на наступний екран після реєстрації
-    setState(initialState),
-      navigation.navigate("Home", { screen: "Posts" }),
-      console.log("state: ", { state });
+    setState(initialState);
+    // navigation.navigate("Home", { screen: "Posts" });
   };
 
   return (
