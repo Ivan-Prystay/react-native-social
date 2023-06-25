@@ -21,6 +21,11 @@ import {
   ScrollView,
 } from "react-native";
 
+//  Firebase
+
+import { storage } from "../../firebase/config";
+import { ref, uploadBytes } from "firebase/storage";
+
 const initialState = {
   name: "",
   locationName: "",
@@ -40,14 +45,11 @@ export default function CreatePostsScreen({ navigation }) {
     (async () => {
       const cameraPermission = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraPermission.status === "granted");
-
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
       }
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
     })();
   }, []);
 
@@ -67,13 +69,37 @@ export default function CreatePostsScreen({ navigation }) {
       setPhoto(picture.uri);
       // const location = await Location.getCurrentPositionAsync();
       // console.log("location: ", location);
+
+      let location = await Location.getCurrentPositionAsync();
+      console.log("location.coords: ", location.coords);
+      setLocation(location);
     } catch (error) {
       console.log("error: ", error.message);
     }
   };
 
+  const timestamp = new Date();
+  timestamp.setHours(timestamp.getHours() + 3); // Add 3 hours to the current time
+
+  const isoString = timestamp.toISOString().slice(0, -5);
+  console.log(isoString);
+
+  const loaderToDb = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+    const storageRef = ref(storage, `imagesPosts/post_${isoString}`);
+
+    // 'file' comes from the Blob or File API
+    uploadBytes(storageRef, file).then((snapshot) => {
+      console.log("snapshot: ", snapshot);
+      console.log("Uploaded a blob or file!");
+    });
+  };
+
+  ///**** */
+
   const sendPhoto = async () => {
-    setLocation(location);
+    loaderToDb();
     navigation.navigate("Post", { photo, state, location });
     setState(initialState);
     setPhoto(null);
@@ -113,7 +139,7 @@ export default function CreatePostsScreen({ navigation }) {
               )}
               {photo ? (
                 <TouchableOpacity onPress={() => setPhoto(null)}>
-                  <Text>Edit photo</Text>
+                  <Text>Edit photo {isoString}</Text>
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity onPress={() => setPhoto(null)}>
