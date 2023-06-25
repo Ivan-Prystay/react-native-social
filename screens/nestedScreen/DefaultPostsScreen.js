@@ -67,11 +67,12 @@ export default function DefaultPostsScreen({ route, navigation }) {
                 <TouchableOpacity
                   style={{ flexDirection: "row" }}
                   onPress={() => navigation.navigate("Map", { item })}
+                  disabled={!item.location}
                 >
                   <SimpleLineIcon
                     name="location-pin"
                     size={24}
-                    color="#BDBDBD"
+                    color={item.location ? "#3c8854" : "#BDBDBD"}
                   />
                   <Text style={{ marginLeft: 15 }}>
                     {item.state.locationName}
