@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useIsFocused } from "@react-navigation/native";
+
+import { useSelector } from "react-redux";
+
 import styled from "styled-components/native";
 
 import * as Location from "expo-location";
@@ -23,8 +26,9 @@ import {
 
 //  Firebase
 
-import { storage } from "../../firebase/config";
-import { ref, uploadBytes } from "firebase/storage";
+import { storage, db } from "../../firebase/config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
 
 const initialState = {
   name: "",
@@ -40,12 +44,14 @@ export default function CreatePostsScreen({ navigation }) {
   const [photo, setPhoto] = useState(null);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [location, setLocation] = useState(null);
+  const { nickname, userId } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
       const cameraPermission = await Camera.requestCameraPermissionsAsync();
       setHasCameraPermission(cameraPermission.status === "granted");
       let { status } = await Location.requestForegroundPermissionsAsync();
+
       if (status !== "granted") {
         setErrorMsg("Permission to access location was denied");
         return;
@@ -67,11 +73,10 @@ export default function CreatePostsScreen({ navigation }) {
     try {
       const picture = await cameraRef.current.takePictureAsync();
       setPhoto(picture.uri);
-      // const location = await Location.getCurrentPositionAsync();
-      // console.log("location: ", location);
 
       let location = await Location.getCurrentPositionAsync();
       console.log("location.coords: ", location.coords);
+
       setLocation(location);
     } catch (error) {
       console.log("error: ", error.message);
@@ -85,21 +90,51 @@ export default function CreatePostsScreen({ navigation }) {
   console.log(isoString);
 
   const loaderToDb = async () => {
-    const response = await fetch(photo);
-    const file = await response.blob();
-    const storageRef = ref(storage, `imagesPosts/post_${isoString}`);
+    try {
+      const response = await fetch(photo);
+      const file = await response.blob();
+      const storageRef = ref(storage, `imagesPosts/post_${isoString}`);
+      const snapshot = await uploadBytes(storageRef, file);
 
-    // 'file' comes from the Blob or File API
-    uploadBytes(storageRef, file).then((snapshot) => {
-      console.log("snapshot: ", snapshot);
       console.log("Uploaded a blob or file!");
-    });
+
+      const url = await getDownloadURL(
+        ref(storage, `imagesPosts/post_${isoString}`)
+      );
+
+      const xhr = new XMLHttpRequest();
+      xhr.responseType = "blob";
+      xhr.onload = (event) => {
+        const blob = xhr.response;
+      };
+      xhr.open("GET", url);
+      xhr.send();
+      return url;
+    } catch (error) {
+      console.log("error: ", error.message);
+    }
   };
 
-  ///**** */
+  const createPost = async () => {
+    const photo = await loaderToDb();
+    console.log("photo: ", photo);
+    try {
+      const docRef = await addDoc(collection(db, "posts"), {
+        photo,
+        userId,
+        nickname,
+        location: location.coords,
+        comment: state,
+      });
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      alert("Error adding document: ", e);
+      console.error("Error adding document: ", e);
+    }
+  };
 
   const sendPhoto = async () => {
-    loaderToDb();
+    createPost();
     navigation.navigate("Post", { photo, state, location });
     setState(initialState);
     setPhoto(null);
@@ -121,7 +156,10 @@ export default function CreatePostsScreen({ navigation }) {
                   {photo ? (
                     <TakePhotoImage source={{ uri: photo }} />
                   ) : (
-                    <CameraStyled ref={cameraRef}></CameraStyled>
+                    <CameraStyled
+                      flashMode={Camera.Constants.FlashMode.auto}
+                      ref={cameraRef}
+                    ></CameraStyled>
                   )}
                   <SnapBtn
                     disabled={photo !== null}
@@ -151,7 +189,10 @@ export default function CreatePostsScreen({ navigation }) {
                   value={state.name}
                   placeholder="Назва..."
                   onChangeText={(value) =>
-                    setState((prevState) => ({ ...prevState, name: value }))
+                    setState((prevState) => ({
+                      ...prevState,
+                      name: value.trim(),
+                    }))
                   }
                 />
                 <Input
@@ -167,7 +208,7 @@ export default function CreatePostsScreen({ navigation }) {
                   onChangeText={(value) =>
                     setState((prevState) => ({
                       ...prevState,
-                      locationName: value,
+                      locationName: value.trim(),
                     }))
                   }
                 />

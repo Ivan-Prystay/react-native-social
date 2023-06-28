@@ -2,11 +2,11 @@ import styled from "styled-components/native";
 
 import MapView, { Marker } from "react-native-maps";
 export default function MapScreen({ route }) {
-  const { latitude, longitude } = route.params.item?.location?.coords || {};
+  const { latitude, longitude } = route.params.item?.location || {};
 
   const date = Date(route.params.item.location.timestamp);
 
-  const { locationName, name } = route.params.item?.state;
+  const { locationName, name } = route.params.item?.comment;
 
   return (
     <MapView

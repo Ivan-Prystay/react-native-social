@@ -15,18 +15,44 @@ import SimpleLineIcon from "react-native-vector-icons/SimpleLineIcons";
 
 import FeatherIcon from "react-native-vector-icons/Fontisto";
 
-export default function DefaultPostsScreen({ route, navigation }) {
+import { db } from "../../firebase/config";
+
+import { collection, onSnapshot } from "firebase/firestore";
+
+export default function DefaultPostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
 
+  const getAllPosts = async () => {
+    const collectionRef = collection(db, "posts");
+
+    onSnapshot(collectionRef, (snapshot) => {
+      const updatedPosts = snapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      updatedPosts.sort((a, b) => a.photo.localeCompare(b.photo));
+      setPosts(updatedPosts);
+    });
+  };
+
+  // const getAllPosts = async () => {
+  //   const collectionRef = collection(db, "posts");
+
+  //   onSnapshot(collectionRef, (snapshot) => {
+  //     const updatedPosts = [];
+
+  //     snapshot.forEach((doc) => {
+  //       updatedPosts.push({ ...doc.data(), id: doc.id });
+  //     });
+
+  //     setPosts(updatedPosts);
+  //   });
+  // };
+
   useEffect(() => {
-    if (
-      route.params === undefined ||
-      posts.find((post) => post.photo === route.params.photo)
-    ) {
-      return;
-    }
-    setPosts((prevState) => [...prevState, route.params]);
-  }, [route.params, posts]);
+    getAllPosts();
+  }, []);
+  console.log("posts: ", posts.length);
 
   return (
     <>
@@ -48,7 +74,6 @@ export default function DefaultPostsScreen({ route, navigation }) {
                   borderRadius: 45,
                 }}
               />
-              <Text>{item.state.name}</Text>
 
               <View style={{ flexDirection: "row" }}>
                 <TouchableOpacity
@@ -58,10 +83,10 @@ export default function DefaultPostsScreen({ route, navigation }) {
                   <FeatherIcon
                     name="comment"
                     style={{
-                      transform: [{ scaleX: -1 }],
-                      marginRight: 40,
+                      marginRight: 10,
                     }}
                   />
+                  <Text style={{ marginRight: 30 }}>{item.comment.name}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -74,15 +99,13 @@ export default function DefaultPostsScreen({ route, navigation }) {
                     size={24}
                     color={item.location ? "#3c8854" : "#BDBDBD"}
                   />
-                  <Text style={{ marginLeft: 15 }}>
-                    {item.state.locationName}
+                  <Text style={{ marginLeft: 10 }}>
+                    {item.comment.locationName}
                   </Text>
                 </TouchableOpacity>
               </View>
-              <Text>
-                lat:{item.location?.coords.latitude}
-                lon:{item.location?.coords.longitude}
-              </Text>
+              <Text>lat:{item.location.latitude}</Text>
+              <Text>lon:{item.location.longitude}</Text>
             </View>
           )}
         />
