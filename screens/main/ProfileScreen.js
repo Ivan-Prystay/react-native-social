@@ -1,9 +1,9 @@
 import styled from "styled-components/native";
 import { View, StatusBar, Text } from "react-native";
-import { store } from "../../redux/store";
+import { useSelector } from "react-redux";
 
 export default function ProfileScreen() {
-  const nickname = store.getState().auth.nickname;
+  const { nickname } = useSelector((state) => state.auth);
 
   return (
     <>

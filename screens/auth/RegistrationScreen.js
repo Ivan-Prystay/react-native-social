@@ -98,7 +98,7 @@ export default function RegistrationScreen({ navigation }) {
                 {/* //? E-mail//? E-mail//? E-mail//? E-mail//? E-mail /// */}
 
                 <Input
-                  placeholder="E-mail"
+                  placeholder="example@example.com"
                   value={state.email}
                   onFocus={() => (setIsShowKeyboard(true), setIsFocused2(true))}
                   onBlur={() => setIsFocused2(false)}
@@ -111,7 +111,7 @@ export default function RegistrationScreen({ navigation }) {
                 {/* //! Password //? Password//? Password//? Password//? */}
 
                 <Input
-                  placeholder="Password"
+                  placeholder="Password (min 6 symb)"
                   value={state.password}
                   secureTextEntry={true}
                   onFocus={() => (setIsShowKeyboard(true), setIsFocused3(true))}
