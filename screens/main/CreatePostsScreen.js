@@ -77,6 +77,18 @@ export default function CreatePostsScreen({ navigation }) {
       let location = await Location.getCurrentPositionAsync();
       console.log("location.coords: ", location.coords);
 
+      const currentLocation = await Location.reverseGeocodeAsync(
+        location.coords
+      );
+      console.log("currentLocation: ", currentLocation);
+
+      const { country, region, city, subregion } = currentLocation[0];
+
+      setState((prevState) => ({
+        ...prevState,
+        locationName: { country, region, city, subregion },
+      }));
+
       setLocation(location);
     } catch (error) {
       console.log("error: ", error.message);
@@ -117,14 +129,13 @@ export default function CreatePostsScreen({ navigation }) {
 
   const createPost = async () => {
     const photo = await loaderToDb();
-    console.log("photo: ", photo);
     try {
       const docRef = await addDoc(collection(db, "posts"), {
         photo,
         userId,
         nickname,
         location: location.coords,
-        comment: state,
+        title: state,
       });
       console.log("Document written with ID: ", docRef.id);
     } catch (e) {
@@ -140,6 +151,7 @@ export default function CreatePostsScreen({ navigation }) {
     setPhoto(null);
   };
 
+  const { country, region, city } = state.locationName;
   return (
     <>
       <StatusBar />
@@ -176,11 +188,15 @@ export default function CreatePostsScreen({ navigation }) {
                 </CameraContainer>
               )}
               {photo ? (
-                <TouchableOpacity onPress={() => setPhoto(null)}>
+                <TouchableOpacity
+                  onPress={() => (setPhoto(null), setState(initialState))}
+                >
                   <Text>Edit photo {isoString}</Text>
                 </TouchableOpacity>
               ) : (
-                <TouchableOpacity onPress={() => setPhoto(null)}>
+                <TouchableOpacity
+                  onPress={() => (setPhoto(null), setState(initialState))}
+                >
                   <Text>Dowload photo</Text>
                 </TouchableOpacity>
               )}
@@ -195,8 +211,11 @@ export default function CreatePostsScreen({ navigation }) {
                     }))
                   }
                 />
-                <Input
-                  value={state.locationName}
+                {/* <Input
+                  value={
+                    state.locationName &&
+                    `${state.locationName.country}, ${state.locationName.region}`
+                  }
                   placeholder="Місцевість..."
                   leftIcon={
                     <SimpleLineIcon
@@ -205,13 +224,32 @@ export default function CreatePostsScreen({ navigation }) {
                       color="#BDBDBD"
                     />
                   }
-                  onChangeText={(value) =>
-                    setState((prevState) => ({
-                      ...prevState,
-                      locationName: value.trim(),
-                    }))
-                  }
-                />
+                  // onChangeText={(value) =>
+                  //   setState((prevState) => ({
+                  //     ...prevState,
+                  //     locationName: value.trim(),
+                  //   }))
+                  // }
+                /> */}
+                <Text
+                  style={{
+                    fontSize: 18,
+                    marginLeft: 10,
+                    borderBottomColor: "grey",
+                    borderBottomWidth: 1,
+                    paddingBottom: 7,
+                    color: `${state.locationName ? "black" : "grey"}`,
+                  }}
+                >
+                  <SimpleLineIcon
+                    name="location-pin"
+                    size={24}
+                    color="#BDBDBD"
+                  />{" "}
+                  {state.locationName
+                    ? `${country}, ${region}, ${city}`
+                    : "Місцевість..."}
+                </Text>
                 <SendPhotoBtn
                   onPress={sendPhoto}
                   disabled={

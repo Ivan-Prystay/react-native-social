@@ -5,8 +5,7 @@ export default function MapScreen({ route }) {
   const { latitude, longitude } = route.params.item?.location || {};
 
   const date = Date(route.params.item.location.timestamp);
-
-  const { locationName, name } = route.params.item?.comment;
+  const { name } = route.params.item.title;
 
   return (
     <MapView
@@ -19,7 +18,7 @@ export default function MapScreen({ route }) {
       }}
     >
       <Marker
-        title={`${name}, ${locationName}, ${date}`}
+        title={`${name}, ${date}`}
         coordinate={{ latitude: latitude, longitude: longitude }}
       />
     </MapView>

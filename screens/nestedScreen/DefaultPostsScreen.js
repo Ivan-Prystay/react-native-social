@@ -18,6 +18,7 @@ import FeatherIcon from "react-native-vector-icons/Fontisto";
 import { db } from "../../firebase/config";
 
 import { collection, onSnapshot } from "firebase/firestore";
+import { createGlobalStyle } from "styled-components";
 
 export default function DefaultPostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
@@ -30,6 +31,7 @@ export default function DefaultPostsScreen({ navigation }) {
         ...doc.data(),
         id: doc.id,
       }));
+      console.log("updatedPosts: ", updatedPosts);
       updatedPosts.sort((a, b) => a.photo.localeCompare(b.photo));
       setPosts(updatedPosts);
     });
@@ -52,7 +54,6 @@ export default function DefaultPostsScreen({ navigation }) {
   useEffect(() => {
     getAllPosts();
   }, []);
-  console.log("posts: ", posts.length);
 
   return (
     <>
@@ -60,7 +61,7 @@ export default function DefaultPostsScreen({ navigation }) {
       <Container>
         <FlatList
           data={posts}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, id) => id.toString()}
           renderItem={({ item }) => (
             <View>
               <Image
@@ -78,7 +79,12 @@ export default function DefaultPostsScreen({ navigation }) {
               <View style={{ flexDirection: "row" }}>
                 <TouchableOpacity
                   style={{ flexDirection: "row" }}
-                  onPress={() => navigation.navigate("Comments", { item })}
+                  onPress={() =>
+                    navigation.navigate("Comments", {
+                      id: item.id,
+                      photo: item.photo,
+                    })
+                  }
                 >
                   <FeatherIcon
                     name="comment"
@@ -86,7 +92,7 @@ export default function DefaultPostsScreen({ navigation }) {
                       marginRight: 10,
                     }}
                   />
-                  <Text style={{ marginRight: 30 }}>{item.comment.name}</Text>
+                  <Text style={{ marginRight: 30 }}>{item.title.name}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -97,15 +103,13 @@ export default function DefaultPostsScreen({ navigation }) {
                   <SimpleLineIcon
                     name="location-pin"
                     size={24}
-                    color={item.location ? "#3c8854" : "#BDBDBD"}
+                    color="#BDBDBD"
                   />
                   <Text style={{ marginLeft: 10 }}>
-                    {item.comment.locationName}
+                    {`${item.title.locationName.country}, ${item.title.locationName.region}`}
                   </Text>
                 </TouchableOpacity>
               </View>
-              <Text>lat:{item.location.latitude}</Text>
-              <Text>lon:{item.location.longitude}</Text>
             </View>
           )}
         />
