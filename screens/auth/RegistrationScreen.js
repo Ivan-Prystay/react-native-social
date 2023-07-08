@@ -25,6 +25,7 @@ const initialState = {
   nickname: "",
   email: "",
   password: "",
+  avatar: "",
 };
 
 export default function RegistrationScreen({ navigation }) {
@@ -57,7 +58,12 @@ export default function RegistrationScreen({ navigation }) {
             >
               <Form>
                 <WrapPhoto>
-                  <AddPhoto activeOpacity={1}>
+                  <AddPhoto
+                    activeOpacity={1}
+                    onPress={() => {
+                      alert("!!!!");
+                    }}
+                  >
                     <Svg
                       width="25"
                       height="25"

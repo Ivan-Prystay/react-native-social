@@ -37,7 +37,8 @@ export default function CommentsScreen({ route }) {
         id: doc.id,
       }));
 
-      updatedAllComments.sort((a, b) => a.nickname.localeCompare(b.nickname));
+      updatedAllComments.sort((a, b) => +a.timeStamp - +b.timeStamp);
+
       setAllComments(updatedAllComments);
     });
   };
@@ -46,14 +47,24 @@ export default function CommentsScreen({ route }) {
     getAllComments();
   }, []);
 
+  const timeStamp = Date.now();
+
+  const createdAt = new Date();
+  const date = createdAt.toLocaleDateString();
+  const time = createdAt.toLocaleTimeString();
+
+  // console.log("timeStamp: ", timeStamp.toLocaleDateString());
+  // console.log("timeStamp: ", timeStamp.toLocaleTimeString());
+
   const createComment = async () => {
     try {
       const docRef = await addDoc(collection(db, "posts", id, "comments"), {
         comment,
         nickname,
+        createdAt: { date, time },
+        timeStamp,
       });
       console.log("Comment added with ID: ", docRef.id);
-      console.log("new Date(): ", new Date());
     } catch (e) {
       alert("Error adding comment: ", e);
       console.error("Error adding comment: ", e);
@@ -82,20 +93,28 @@ export default function CommentsScreen({ route }) {
           renderItem={({ item }) => (
             <View>
               <Text>{item.nickname}</Text>
-              <Text>{item.comment}</Text>
+              <View
+                style={{
+                  backgroundColor: "#00000008",
+                  marginLeft: 30,
+                  marginRight: 10,
+                  padding: 16,
+                  borderBottomRightRadius: 6,
+                  borderBottomLeftRadius: 6,
+                  borderTopRightRadius: 6,
+                }}
+              >
+                <Text style={{ color: "#212121" }}>{item.comment}</Text>
+                <Text style={{ color: "#BDBDBD" }}>
+                  {item.createdAt.date} | {item.createdAt.time}
+                </Text>
+              </View>
             </View>
           )}
         />
 
         <Input
           value={comment}
-          // onChangeText={(value) =>
-          //   setComment((prevState) => ({
-          //     ...prevState,
-          //     value,
-          //   }))
-          // }
-
           onChangeText={(value) => setComment(value)}
           rightIcon={
             <Ionicons

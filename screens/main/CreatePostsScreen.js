@@ -75,12 +75,10 @@ export default function CreatePostsScreen({ navigation }) {
       setPhoto(picture.uri);
 
       let location = await Location.getCurrentPositionAsync();
-      console.log("location.coords: ", location.coords);
 
       const currentLocation = await Location.reverseGeocodeAsync(
         location.coords
       );
-      console.log("currentLocation: ", currentLocation);
 
       const { country, region, city, subregion } = currentLocation[0];
 
@@ -203,7 +201,7 @@ export default function CreatePostsScreen({ navigation }) {
               <View>
                 <Input
                   value={state.name}
-                  placeholder="Назва..."
+                  placeholder="Name..."
                   onChangeText={(value) =>
                     setState((prevState) => ({
                       ...prevState,
@@ -211,26 +209,6 @@ export default function CreatePostsScreen({ navigation }) {
                     }))
                   }
                 />
-                {/* <Input
-                  value={
-                    state.locationName &&
-                    `${state.locationName.country}, ${state.locationName.region}`
-                  }
-                  placeholder="Місцевість..."
-                  leftIcon={
-                    <SimpleLineIcon
-                      name="location-pin"
-                      size={24}
-                      color="#BDBDBD"
-                    />
-                  }
-                  // onChangeText={(value) =>
-                  //   setState((prevState) => ({
-                  //     ...prevState,
-                  //     locationName: value.trim(),
-                  //   }))
-                  // }
-                /> */}
                 <Text
                   style={{
                     fontSize: 18,
@@ -248,7 +226,7 @@ export default function CreatePostsScreen({ navigation }) {
                   />{" "}
                   {state.locationName
                     ? `${country}, ${region}, ${city}`
-                    : "Місцевість..."}
+                    : "Location..."}
                 </Text>
                 <SendPhotoBtn
                   onPress={sendPhoto}

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-
 import {
   View,
   StatusBar,
@@ -8,52 +7,56 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
-
 import styled from "styled-components/native";
-
 import SimpleLineIcon from "react-native-vector-icons/SimpleLineIcons";
-
 import FeatherIcon from "react-native-vector-icons/Fontisto";
-
 import { db } from "../../firebase/config";
-
-import { collection, onSnapshot } from "firebase/firestore";
-import { createGlobalStyle } from "styled-components";
+import { collection, onSnapshot, getDocs, doc } from "firebase/firestore";
 
 export default function DefaultPostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
+  const [commentsCount, setCommentsCount] = useState({});
 
   const getAllPosts = async () => {
     const collectionRef = collection(db, "posts");
 
-    onSnapshot(collectionRef, (snapshot) => {
+    onSnapshot(collectionRef, async (snapshot) => {
       const updatedPosts = snapshot.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
       }));
-      console.log("updatedPosts: ", updatedPosts);
-      updatedPosts.sort((a, b) => a.photo.localeCompare(b.photo));
-      setPosts(updatedPosts);
+
+      const postsWithCommentsCount = await Promise.all(
+        updatedPosts.map(async (post) => {
+          return { ...post };
+        })
+      );
+
+      setPosts(postsWithCommentsCount);
     });
   };
 
-  // const getAllPosts = async () => {
-  //   const collectionRef = collection(db, "posts");
+  const getCommentsCount = async (post) => {
+    const commentsCollectionRef = collection(db, "posts", post.id, "comments");
 
-  //   onSnapshot(collectionRef, (snapshot) => {
-  //     const updatedPosts = [];
-
-  //     snapshot.forEach((doc) => {
-  //       updatedPosts.push({ ...doc.data(), id: doc.id });
-  //     });
-
-  //     setPosts(updatedPosts);
-  //   });
-  // };
+    onSnapshot(commentsCollectionRef, (snapshot) => {
+      const newCommentsCount = snapshot.size;
+      setCommentsCount((prevCommentsCount) => ({
+        ...prevCommentsCount,
+        [post.id]: newCommentsCount,
+      }));
+    });
+  };
 
   useEffect(() => {
     getAllPosts();
   }, []);
+
+  useEffect(() => {
+    posts.forEach((post) => {
+      getCommentsCount(post);
+    });
+  }, [posts]);
 
   return (
     <>
@@ -92,9 +95,11 @@ export default function DefaultPostsScreen({ navigation }) {
                       marginRight: 10,
                     }}
                   />
+                  <Text style={{ marginRight: 10 }}>
+                    {commentsCount[item.id] || 0}
+                  </Text>
                   <Text style={{ marginRight: 30 }}>{item.title.name}</Text>
                 </TouchableOpacity>
-
                 <TouchableOpacity
                   style={{ flexDirection: "row" }}
                   onPress={() => navigation.navigate("Map", { item })}
