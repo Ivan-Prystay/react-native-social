@@ -10,12 +10,17 @@ import {
 import styled from "styled-components/native";
 import SimpleLineIcon from "react-native-vector-icons/SimpleLineIcons";
 import FeatherIcon from "react-native-vector-icons/Fontisto";
+
 import { db } from "../../firebase/config";
 import { collection, onSnapshot, getDocs, doc } from "firebase/firestore";
+// import { useSelector } from "react-redux";
 
 export default function DefaultPostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
   const [commentsCount, setCommentsCount] = useState({});
+
+  // const { nickname, avatarURL } = useSelector((state) => state.auth);
+  // useSelector;
 
   const getAllPosts = async () => {
     const collectionRef = collection(db, "posts");
@@ -25,6 +30,8 @@ export default function DefaultPostsScreen({ navigation }) {
         ...doc.data(),
         id: doc.id,
       }));
+
+      updatedPosts.sort((a, b) => b.photo.localeCompare(a.photo));
 
       const postsWithCommentsCount = await Promise.all(
         updatedPosts.map(async (post) => {
@@ -62,6 +69,20 @@ export default function DefaultPostsScreen({ navigation }) {
     <>
       <StatusBar />
       <Container>
+        <Text
+          style={{
+            paddingVertical: 15,
+            textAlign: "center",
+            fontSize: 20,
+            fontWeight: "500",
+            backgroundColor: "white",
+          }}
+        >
+          Posts
+        </Text>
+        {/* <Image source={{ uri: avatarURL }}></Image>
+        <Text>{nickname}</Text> */}
+
         <FlatList
           data={posts}
           keyExtractor={(item, id) => id.toString()}

@@ -93,10 +93,10 @@ export default function CreatePostsScreen({ navigation }) {
     }
   };
 
-  const timestamp = new Date();
-  timestamp.setHours(timestamp.getHours() + 3); // Add 3 hours to the current time
+  const date = new Date();
+  date.setHours(date.getHours() + 3); // Add 3 hours to the current time
 
-  const isoString = timestamp.toISOString().slice(0, -5);
+  const isoString = date.toISOString().slice(0, -5);
   console.log(isoString);
 
   const loaderToDb = async () => {
@@ -205,7 +205,7 @@ export default function CreatePostsScreen({ navigation }) {
                   onChangeText={(value) =>
                     setState((prevState) => ({
                       ...prevState,
-                      name: value.trim(),
+                      name: value,
                     }))
                   }
                 />

@@ -1,10 +1,14 @@
 import { useState } from "react";
 import styled from "styled-components/native";
 
+import { Input } from "react-native-elements";
+
+import ShowIcon from "../../components/ShowIcon";
+import HideIcon from "../../components/HideIcon";
+
 import {
   TouchableOpacity,
   ImageBackground,
-  TextInput,
   View,
   Text,
   KeyboardAvoidingView,
@@ -24,20 +28,31 @@ const initialState = {
   password: "",
 };
 
+const inputContainerStyle = {
+  borderWidth: 1,
+  backgroundColor: "#f6f6f6",
+  borderRadius: 8,
+  height: 50,
+  fontSize: 16,
+  padding: 16,
+};
+
 export default function LoginScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [isFocused1, setIsFocused1] = useState(false);
   const [isFocused2, setIsFocused2] = useState(false);
 
+  const [showText, setShowText] = useState(true);
+  const toggleShowText = () => {
+    setShowText(!showText);
+  };
+
   const dispatch = useDispatch();
 
   const handleLogIn = () => {
     dispatch(authSignInUser(state));
-    // Логіка реєстрації
-    // Перехід на наступний екран після реєстрації
     setState(initialState);
-    // navigation.navigate("Home", { screen: "Posts" });
   };
 
   return (
@@ -60,11 +75,16 @@ export default function LoginScreen({ navigation }) {
                   placeholder="E-mail"
                   value={state.email}
                   onFocus={() => (setIsShowKeyboard(true), setIsFocused1(true))}
-                  onBlur={() => setIsFocused1(false)}
+                  onBlur={() => (
+                    setIsShowKeyboard(false), setIsFocused1(false)
+                  )}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
                   }
-                  isFocused={isFocused1}
+                  inputContainerStyle={{
+                    ...inputContainerStyle,
+                    borderColor: isFocused1 ? "#FF6C00" : "transparent",
+                  }}
                 />
 
                 {/* //! Password //? Password//? Password//? Password//? */}
@@ -72,7 +92,7 @@ export default function LoginScreen({ navigation }) {
                 <Input
                   placeholder="Password"
                   value={state.password}
-                  secureTextEntry={true}
+                  secureTextEntry={showText}
                   onFocus={() => (setIsShowKeyboard(true), setIsFocused2(true))}
                   onBlur={() => (
                     setIsShowKeyboard(false), setIsFocused2(false)
@@ -83,7 +103,17 @@ export default function LoginScreen({ navigation }) {
                       password: value,
                     }))
                   }
-                  isFocused={isFocused2}
+                  inputContainerStyle={{
+                    ...inputContainerStyle,
+                    borderColor: isFocused2 ? "#FF6C00" : "transparent",
+                  }}
+                  rightIcon={
+                    showText ? (
+                      <ShowIcon onPress={toggleShowText} />
+                    ) : (
+                      <HideIcon onPress={toggleShowText} />
+                    )
+                  }
                 />
 
                 {!isShowKeyboard && (
@@ -140,16 +170,7 @@ const FormTitle = styled(Text)`
   margin-top: 72px;
   margin-bottom: 20px;
 `;
-const Input = styled(TextInput)`
-  border-width: 1px;
-  background-color: #f6f6f6;
-  border-radius: 8px;
-  height: 50px;
-  font-size: 16px;
-  margin: 0px 16px 16px;
-  padding: 16px;
-  border-color: ${(props) => (props.isFocused ? "#FF6C00" : "transparent")};
-`;
+
 const Login = styled(TouchableOpacity)`
   margin: 27px 16px 0;
   border-radius: 100px;

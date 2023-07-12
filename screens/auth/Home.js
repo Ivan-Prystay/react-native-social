@@ -19,6 +19,7 @@ export default function Home({ navigation }) {
       <MainTab.Screen
         options={{
           tabBarShowLabel: false,
+          headerShown: false, // Приховав всі батьківські заголовки
           tabBarIcon: ({ focused, size, color }) => (
             <Ionicons
               name="md-grid-outline"
@@ -38,7 +39,6 @@ export default function Home({ navigation }) {
         options={{
           headerTitleAlign: "center",
           tabBarStyle: { display: "none" },
-          tabBarShowLabel: false,
           tabBarIcon: ({ focused, size, color }) => (
             <Svg
               width="70"

@@ -25,7 +25,8 @@ export default function CommentsScreen({ route }) {
   const [comment, setComment] = useState("");
   const [allComments, setAllComments] = useState([]);
 
-  const { nickname } = useSelector((state) => state.auth);
+  const { nickname, avatarURL } = useSelector((state) => state.auth);
+
   const { photo, id } = route.params;
 
   const getAllComments = async () => {
@@ -53,9 +54,6 @@ export default function CommentsScreen({ route }) {
   const date = createdAt.toLocaleDateString();
   const time = createdAt.toLocaleTimeString();
 
-  // console.log("timeStamp: ", timeStamp.toLocaleDateString());
-  // console.log("timeStamp: ", timeStamp.toLocaleTimeString());
-
   const createComment = async () => {
     try {
       const docRef = await addDoc(collection(db, "posts", id, "comments"), {
@@ -63,6 +61,7 @@ export default function CommentsScreen({ route }) {
         nickname,
         createdAt: { date, time },
         timeStamp,
+        avatarURL,
       });
       console.log("Comment added with ID: ", docRef.id);
     } catch (e) {
@@ -75,23 +74,25 @@ export default function CommentsScreen({ route }) {
     <>
       <StatusBar />
       <Container>
-        <ScrollView>
-          <Image
-            source={{ uri: photo }}
-            style={{
-              height: 240,
-              borderRadius: 8,
-              marginHorizontal: 16,
-              marginTop: 20,
-            }}
-          ></Image>
-        </ScrollView>
+        <Image
+          source={{ uri: photo }}
+          style={{
+            height: 240,
+            borderRadius: 8,
+            marginTop: 16,
+            marginBottom: 16,
+          }}
+        ></Image>
 
         <FlatList
           data={allComments}
           keyExtractor={(item, id) => id.toString()}
           renderItem={({ item }) => (
             <View>
+              <Image
+                source={{ uri: item.avatarURL }}
+                style={{ height: 28, width: 28, borderRadius: 15 }}
+              ></Image>
               <Text>{item.nickname}</Text>
               <View
                 style={{
@@ -146,4 +147,5 @@ export default function CommentsScreen({ route }) {
 const Container = styled(View)`
   flex: 1;
   background-color: #ffffff;
+  padding: 16px;
 `;

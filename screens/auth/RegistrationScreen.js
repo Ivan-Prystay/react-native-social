@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import * as ImagePicker from "expo-image-picker";
 import styled from "styled-components/native";
-import Svg, { Circle, Path } from "react-native-svg";
 
 import {
   TouchableOpacity,
   ImageBackground,
-  TextInput,
   View,
   Text,
   KeyboardAvoidingView,
@@ -13,11 +12,27 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   StatusBar,
+  Image,
 } from "react-native";
+
+import { Input } from "react-native-elements";
 
 import { useDispatch } from "react-redux";
 
 import { authSignUpUser } from "../../redux/auth/authOperations";
+import AddAvatar from "../../components/AddAvatar";
+import DeleteAvatar from "../../components/DeleteAvatar";
+import ShowIcon from "../../components/ShowIcon";
+import HideIcon from "../../components/HideIcon";
+
+const inputContainerStyle = {
+  borderWidth: 1,
+  backgroundColor: "#f6f6f6",
+  borderRadius: 8,
+  height: 50,
+  fontSize: 16,
+  padding: 16,
+};
 
 //*             INITIAL   STATE        //
 
@@ -31,19 +46,40 @@ const initialState = {
 export default function RegistrationScreen({ navigation }) {
   const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
   const [isFocused1, setIsFocused1] = useState(false);
   const [isFocused2, setIsFocused2] = useState(false);
   const [isFocused3, setIsFocused3] = useState(false);
+  const [avatar, setAvatar] = useState(null);
+
+  const [showText, setShowText] = useState(true);
+  const toggleShowText = () => {
+    setShowText(!showText);
+  };
 
   const dispatch = useDispatch();
 
   const handleRegistration = () => {
     dispatch(authSignUpUser(state));
-    // Логіка реєстрації
-    // Перехід на наступний екран після реєстрації
     setState(initialState);
-    // navigation.navigate("Home", { screen: "Posts" });
   };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [3, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setAvatar(result.uri);
+    }
+  };
+
+  useEffect(() => {
+    setState((prevState) => ({ ...prevState, avatar }));
+  }, [avatar]);
 
   return (
     <>
@@ -58,34 +94,20 @@ export default function RegistrationScreen({ navigation }) {
             >
               <Form>
                 <WrapPhoto>
-                  <AddPhoto
-                    activeOpacity={1}
-                    onPress={() => {
-                      alert("!!!!");
-                    }}
-                  >
-                    <Svg
-                      width="25"
-                      height="25"
-                      viewBox="0 0 25 25"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <Circle
-                        cx="12.5"
-                        cy="12.5"
-                        r="12"
-                        fill="#fff"
-                        stroke="#FF6C00"
-                      />
-                      <Path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M13 6H12V12H6V13H12V19H13V13H19V12H13V6Z"
-                        fill="#FF6C00"
-                      />
-                    </Svg>
-                  </AddPhoto>
+                  <Image
+                    style={{ height: 120, borderRadius: 8 }}
+                    source={{ uri: avatar }}
+                  ></Image>
+
+                  {!avatar ? (
+                    <AddPhoto activeOpacity={1} onPress={() => pickImage()}>
+                      <AddAvatar />
+                    </AddPhoto>
+                  ) : (
+                    <DelPhoto activeOpacity={1} onPress={() => setAvatar(null)}>
+                      <DeleteAvatar />
+                    </DelPhoto>
+                  )}
                 </WrapPhoto>
                 <FormTitle>Registartion</FormTitle>
                 {/* //? LOGIN // //? LOGIN // //? LOGIN ////? LOGIN // // */}
@@ -94,32 +116,41 @@ export default function RegistrationScreen({ navigation }) {
                   placeholder="Login"
                   value={state.nickname}
                   onFocus={() => (setIsShowKeyboard(true), setIsFocused1(true))}
-                  onBlur={() => setIsFocused1(false)}
+                  onBlur={() => (
+                    setIsFocused1(false), setIsShowKeyboard(false)
+                  )}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, nickname: value }))
                   }
-                  isFocused={isFocused1}
+                  inputContainerStyle={{
+                    ...inputContainerStyle,
+                    borderColor: isFocused1 ? "#FF6C00" : "transparent",
+                  }}
                 />
 
                 {/* //? E-mail//? E-mail//? E-mail//? E-mail//? E-mail /// */}
 
                 <Input
-                  placeholder="example@example.com"
+                  placeholder="E-mail"
                   value={state.email}
                   onFocus={() => (setIsShowKeyboard(true), setIsFocused2(true))}
-                  onBlur={() => setIsFocused2(false)}
+                  onBlur={() => (
+                    setIsShowKeyboard(false), setIsFocused2(false)
+                  )}
                   onChangeText={(value) =>
                     setState((prevState) => ({ ...prevState, email: value }))
                   }
-                  isFocused={isFocused2}
+                  inputContainerStyle={{
+                    ...inputContainerStyle,
+                    borderColor: isFocused2 ? "#FF6C00" : "transparent",
+                  }}
                 />
 
                 {/* //! Password //? Password//? Password//? Password//? */}
-
                 <Input
                   placeholder="Password (min 6 symb)"
                   value={state.password}
-                  secureTextEntry={true}
+                  secureTextEntry={showText}
                   onFocus={() => (setIsShowKeyboard(true), setIsFocused3(true))}
                   onBlur={() => (
                     setIsShowKeyboard(false), setIsFocused3(false)
@@ -130,8 +161,19 @@ export default function RegistrationScreen({ navigation }) {
                       password: value,
                     }))
                   }
-                  isFocused={isFocused3}
+                  inputContainerStyle={{
+                    ...inputContainerStyle,
+                    borderColor: isFocused3 ? "#FF6C00" : "transparent",
+                  }}
+                  rightIcon={
+                    showText ? (
+                      <ShowIcon onPress={toggleShowText} />
+                    ) : (
+                      <HideIcon onPress={toggleShowText} />
+                    )
+                  }
                 />
+
                 {!isShowKeyboard && (
                   <>
                     <Register
@@ -140,7 +182,8 @@ export default function RegistrationScreen({ navigation }) {
                       disabled={
                         state.email === "" ||
                         state.nickname === "" ||
-                        state.password === ""
+                        state.password === "" ||
+                        state.avatar === null
                       }
                     >
                       <RegisterText>SIGN UP</RegisterText>
@@ -189,16 +232,7 @@ const FormTitle = styled(Text)`
   margin-top: 72px;
   margin-bottom: 20px;
 `;
-const Input = styled(TextInput)`
-  border-width: 1px;
-  background-color: #f6f6f6;
-  border-radius: 8px;
-  height: 50px;
-  font-size: 16px;
-  margin: 0px 16px 16px;
-  padding: 16px;
-  border-color: ${(props) => (props.isFocused ? "#FF6C00" : "transparent")};
-`;
+
 const Register = styled(TouchableOpacity)`
   margin: 27px 16px 0;
   border-radius: 100px;
@@ -232,5 +266,11 @@ const WrapPhoto = styled(View)`
 `;
 const AddPhoto = styled(TouchableOpacity)`
   left: 107px;
-  top: 77px;
+  top: -45px;
+  width: 40px;
+`;
+
+const DelPhoto = styled(AddPhoto)`
+  left: 102px;
+  top: -50px;
 `;
