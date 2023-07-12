@@ -7,7 +7,7 @@ const HideIcon = ({ onPress }) => {
         fill="#1B4371"
         stroke="#1B4371"
         fontSize="16"
-        fontWeight="400"
+        fontWeight="300"
         x="30"
         y="15"
         textAnchor="middle"

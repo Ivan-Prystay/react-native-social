@@ -41,7 +41,7 @@ export const authSignUpUser =
       );
     } catch (error) {
       console.log("error.message", error.message);
-      alert("error.message", error.message);
+      alert(error.message);
     }
   };
 

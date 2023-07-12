@@ -73,7 +73,7 @@ export default function RegistrationScreen({ navigation }) {
     });
 
     if (!result.canceled) {
-      setAvatar(result.uri);
+      setAvatar(result.assets[0].uri);
     }
   };
 
@@ -93,7 +93,7 @@ export default function RegistrationScreen({ navigation }) {
               behavior={Platform.OS == "ios" ? "padding" : ""}
             >
               <Form>
-                <WrapPhoto>
+                <WrapAvatar>
                   <Image
                     style={{ height: 120, borderRadius: 8 }}
                     source={{ uri: avatar }}
@@ -108,12 +108,12 @@ export default function RegistrationScreen({ navigation }) {
                       <DeleteAvatar />
                     </DelPhoto>
                   )}
-                </WrapPhoto>
+                </WrapAvatar>
                 <FormTitle>Registartion</FormTitle>
                 {/* //? LOGIN // //? LOGIN // //? LOGIN ////? LOGIN // // */}
 
                 <Input
-                  placeholder="Login"
+                  placeholder="Nickname"
                   value={state.nickname}
                   onFocus={() => (setIsShowKeyboard(true), setIsFocused1(true))}
                   onBlur={() => (
@@ -183,7 +183,7 @@ export default function RegistrationScreen({ navigation }) {
                         state.email === "" ||
                         state.nickname === "" ||
                         state.password === "" ||
-                        state.avatar === null
+                        state.avatar === ""
                       }
                     >
                       <RegisterText>SIGN UP</RegisterText>
@@ -254,7 +254,7 @@ const TextLink = styled(Text)`
   font-size: 16px;
   font-weight: 400;
 `;
-const WrapPhoto = styled(View)`
+const WrapAvatar = styled(View)`
   height: 120px;
   width: 120px;
   border-radius: 16px;
