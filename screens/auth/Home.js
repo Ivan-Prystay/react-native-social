@@ -9,8 +9,6 @@ import PostsScreen from "../main/PostsScreen";
 import CreatePostsScreen from "../main/CreatePostsScreen";
 import ProfileScreen from "../main/ProfileScreen";
 
-import { ButtonOut } from "../../components/ButtonOut";
-
 const MainTab = createBottomTabNavigator();
 
 export default function Home({ navigation }) {
@@ -62,7 +60,7 @@ export default function Home({ navigation }) {
       />
       <MainTab.Screen
         options={{
-          headerTitleAlign: "center",
+          headerShown: false,
           tabBarShowLabel: false,
           tabBarIcon: ({ focused, size, color }) => (
             <Ionicons
@@ -71,7 +69,6 @@ export default function Home({ navigation }) {
               color={focused ? "#FF6C00" : color}
             />
           ),
-          headerRight: () => <ButtonOut />,
         }}
         name="Profile"
         component={ProfileScreen}

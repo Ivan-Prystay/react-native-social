@@ -39,20 +39,22 @@ const CommentItem = React.memo(({ item }) => {
           flex: 1,
           flexGrow: 1,
           backgroundColor: "#00000008",
-          padding: 16,
-          borderBottomRightRadius: 16,
-          borderBottomLeftRadius: 16,
-          borderTopRightRadius: isOwnComment ? 0 : 16,
-          borderTopLeftRadius: isOwnComment ? 16 : 0,
+          paddingHorizontal: 16,
+          paddingVertical: 8,
+          borderBottomRightRadius: 8,
+          borderBottomLeftRadius: 8,
+          borderTopRightRadius: isOwnComment ? 0 : 8,
+          borderTopLeftRadius: isOwnComment ? 8 : 0,
           marginHorizontal: 8,
-          marginBottom: 24,
+          marginBottom: 16,
         }}
       >
-        <Text style={{ color: "#212121" }}>{item.comment}</Text>
+        <Text style={{ color: "#212121", fontSize: 12 }}>{item.comment}</Text>
         <Text
           style={{
             color: "#BDBDBD",
             textAlign: isOwnComment ? "left" : "right",
+            fontSize: 12,
           }}
         >
           {item.createdAt.date} | {item.createdAt.time}
@@ -126,9 +128,9 @@ const CommentsScreen = ({ route }) => {
         <Image
           source={{ uri: photo }}
           style={{
-            height: 240,
+            height: 200,
             borderRadius: 8,
-            marginTop: 16,
+            // marginTop: 16,
             marginBottom: 16,
           }}
         ></Image>
@@ -141,6 +143,7 @@ const CommentsScreen = ({ route }) => {
 
         <Input
           value={comment}
+          style={{ alignItems: "flex-end" }}
           onChangeText={(value) => setComment(value)}
           rightIcon={
             <Ionicons
@@ -154,13 +157,17 @@ const CommentsScreen = ({ route }) => {
               disabled={!comment}
             />
           }
+          containerStyle={{
+            height: 28,
+          }}
           inputContainerStyle={{
             backgroundColor: "#F6F6F6",
             paddingLeft: 15,
-            borderRadius: 25,
+            borderRadius: 20,
             borderWidth: 1,
             borderColor: "#E8E8E8",
             borderBottomWidth: 1,
+            height: 42,
           }}
           placeholder="To comment..."
         ></Input>
