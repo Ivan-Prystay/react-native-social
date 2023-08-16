@@ -1,68 +1,63 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components/native";
-import {
-  View,
-  StatusBar,
-  Text,
-  Image,
-  ScrollView,
-  FlatList,
-} from "react-native";
+import { View, StatusBar, Text, Image, FlatList } from "react-native";
 import { Input } from "react-native-elements";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useSelector } from "react-redux";
 import { db } from "../../firebase/config";
 import { collection, addDoc, onSnapshot } from "firebase/firestore";
 
+//*                  One Comment
+
 const CommentItem = React.memo(({ item }) => {
   const { nickname } = useSelector((state) => state.auth);
   const isOwnComment = item.nickname === nickname;
 
   return (
-    <View
-      style={{
-        flex: 1,
-        flexDirection: isOwnComment ? "row-reverse" : "row",
-        paddingHorizontal: 16,
-      }}
-    >
-      <Image
-        source={{ uri: item.avatarURL }}
-        style={{
-          height: 28,
-          width: 28,
-          borderRadius: 15,
-        }}
-      />
-      <View
-        style={{
-          flex: 1,
-          flexGrow: 1,
-          backgroundColor: "#00000008",
-          paddingHorizontal: 16,
-          paddingVertical: 8,
-          borderBottomRightRadius: 8,
-          borderBottomLeftRadius: 8,
-          borderTopRightRadius: isOwnComment ? 0 : 8,
-          borderTopLeftRadius: isOwnComment ? 8 : 0,
-          marginHorizontal: 8,
-          marginBottom: 16,
-        }}
-      >
-        <Text style={{ color: "#212121", fontSize: 12 }}>{item.comment}</Text>
-        <Text
-          style={{
-            color: "#BDBDBD",
-            textAlign: isOwnComment ? "left" : "right",
-            fontSize: 12,
-          }}
-        >
+    <CommenBlock isOwnComment={isOwnComment}>
+      <Avatar source={{ uri: item.avatarURL }} />
+      <CommentContentWrap isOwnComment={isOwnComment}>
+        <CommentContent>{item.comment}</CommentContent>
+        <CommentDate isOwnComment={isOwnComment}>
           {item.createdAt.date} | {item.createdAt.time}
-        </Text>
-      </View>
-    </View>
+        </CommentDate>
+      </CommentContentWrap>
+    </CommenBlock>
   );
 });
+
+const Avatar = styled(Image)`
+  height: 28px;
+  width: 28px;
+  border-radius: 15px;
+`;
+const CommentContent = styled(Text)`
+  color: #212121;
+  font-size: 12px;
+`;
+const CommentDate = styled(Text)`
+  color: #bdbdbd;
+  text-align: ${(props) => (props.isOwnComment ? "left" : "right")};
+  font-size: 12px;
+`;
+const CommenBlock = styled(View)`
+  flex: 1;
+  flex-direction: ${(props) => (props.isOwnComment ? "row-reverse" : "row")};
+  padding: 0 16px;
+`;
+const CommentContentWrap = styled(View)`
+  flex: 1;
+  flex-grow: 1;
+  background-color: #00000008;
+  padding: 8px 16px;
+  border-bottom-right-radius: 8px;
+  border-bottom-left-radius: 8px;
+  border-top-right-radius: ${(props) => (props.isOwnComment ? 0 : "8px")};
+  border-top-left-radius: ${(props) => (props.isOwnComment ? "8px" : 0)};
+  margin: 0 8px 16px;
+`;
+
+//*                  All Comments
 
 const CommentsScreen = ({ route }) => {
   const [comment, setComment] = useState("");
@@ -125,16 +120,7 @@ const CommentsScreen = ({ route }) => {
     <>
       <StatusBar />
       <Container>
-        <Image
-          source={{ uri: photo }}
-          style={{
-            height: 200,
-            borderRadius: 8,
-            // marginTop: 16,
-            marginBottom: 16,
-          }}
-        ></Image>
-
+        <PostPhoto source={{ uri: photo }}></PostPhoto>
         <FlatList
           data={allComments}
           keyExtractor={(item, id) => id.toString()}
@@ -180,6 +166,13 @@ const Container = styled(View)`
   flex: 1;
   background-color: #ffffff;
   padding: 16px;
+`;
+
+const PostPhoto = styled(Image)`
+  height: 200px;
+  border-radius: 8px;
+  /* marginTop: 16px; */
+  margin-bottom: 16px;
 `;
 
 export default CommentsScreen;

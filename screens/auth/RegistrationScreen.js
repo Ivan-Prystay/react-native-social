@@ -94,10 +94,7 @@ export default function RegistrationScreen({ navigation }) {
             >
               <Form>
                 <WrapAvatar>
-                  <Image
-                    style={{ height: 120, borderRadius: 8 }}
-                    source={{ uri: avatar }}
-                  ></Image>
+                  <ImageAvatar source={{ uri: avatar }}></ImageAvatar>
 
                   {!avatar ? (
                     <AddPhoto activeOpacity={1} onPress={() => pickImage()}>
@@ -264,6 +261,12 @@ const WrapAvatar = styled(View)`
   display: flex;
   align-self: center;
 `;
+
+const ImageAvatar = styled(Image)`
+  height: 120px;
+  border-radius: 8px;
+`;
+
 const AddPhoto = styled(TouchableOpacity)`
   left: 107px;
   top: -45px;

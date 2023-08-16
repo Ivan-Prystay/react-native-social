@@ -69,40 +69,19 @@ export default function DefaultPostsScreen({ navigation }) {
     <>
       <StatusBar />
       <Container>
-        <Text
-          style={{
-            paddingVertical: 15,
-            textAlign: "center",
-            fontSize: 20,
-            fontWeight: "500",
-            backgroundColor: "white",
-          }}
-        >
-          Posts
-        </Text>
+        <TitleScreen>Posts</TitleScreen>
         {/* <Image source={{ uri: avatarURL }}></Image>
         <Text>{nickname}</Text> */}
-
         <FlatList
+          contentContainerStyle={{ paddingBottom: 60 }} // Застосування підсумкового розрахунку
           data={posts}
           keyExtractor={(item, id) => id.toString()}
           renderItem={({ item }) => (
             <View>
-              <Image
-                source={{ uri: item.photo }}
-                style={{
-                  height: 350,
-                  marginHorizontal: 10,
-                  marginTop: 10,
-                  padding: 25,
-                  borderWidth: 3,
-                  borderRadius: 45,
-                }}
-              />
+              <PostPhoto source={{ uri: item.photo }} />
 
-              <View style={{ flexDirection: "row" }}>
-                <TouchableOpacity
-                  style={{ flexDirection: "row" }}
+              <PostDiscription>
+                <CommentLink
                   onPress={() =>
                     navigation.navigate("Comments", {
                       id: item.id,
@@ -110,32 +89,25 @@ export default function DefaultPostsScreen({ navigation }) {
                     })
                   }
                 >
-                  <FeatherIcon
-                    name="comment"
-                    style={{
-                      marginRight: 10,
-                    }}
-                  />
-                  <Text style={{ marginRight: 10 }}>
-                    {commentsCount[item.id] || 0}
-                  </Text>
-                  <Text style={{ marginRight: 30 }}>{item.title.name}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{ flexDirection: "row" }}
+                  <CommentIcon name="comment" color="#FF6C00" />
+
+                  <CommentsCountWrap>
+                    <CommentsCount>{commentsCount[item.id] || 0}</CommentsCount>
+                  </CommentsCountWrap>
+
+                  <PostTitle>{item.title.name}</PostTitle>
+                </CommentLink>
+
+                <MapLink
                   onPress={() => navigation.navigate("Map", { item })}
                   disabled={!item.location}
                 >
-                  <SimpleLineIcon
-                    name="location-pin"
-                    size={24}
-                    color="#BDBDBD"
-                  />
-                  <Text style={{ marginLeft: 10 }}>
+                  <MapIcon name="location-pin" />
+                  <LocationName>
                     {`${item.title.locationName.country}, ${item.title.locationName.region}`}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                  </LocationName>
+                </MapLink>
+              </PostDiscription>
             </View>
           )}
         />
@@ -145,6 +117,71 @@ export default function DefaultPostsScreen({ navigation }) {
 }
 
 const Container = styled(View)`
-  flex: 1;
   background-color: #e5e5e5;
+`;
+
+const TitleScreen = styled(Text)`
+  padding: 15px 0;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 500;
+  background-color: white;
+`;
+
+const PostPhoto = styled(Image)`
+  height: 350px;
+  margin: 0 10px;
+  margin-top: 10px;
+  padding: 25px;
+  border-width: 3px;
+  border-radius: 45px;
+`;
+
+const PostDiscription = styled(View)`
+  flex: 1;
+  flex-direction: row;
+  padding: 5px 10px 0;
+`;
+
+const CommentLink = styled(TouchableOpacity)`
+  flex-direction: row;
+  align-items: flex-start;
+  flex: 1;
+  margin-right: 10px;
+`;
+
+const CommentIcon = styled(FeatherIcon)`
+  margin-right: 10px;
+  font-size: 24px;
+`;
+
+const CommentsCount = styled(Text)`
+  color: white;
+`;
+
+const CommentsCountWrap = styled(View)`
+  border-radius: 30px;
+  background-color: #ff6c00;
+  margin-right: 20px;
+  padding: 0 5px;
+`;
+
+const PostTitle = styled(Text)`
+  font-size: 16px;
+  flex: 1;
+  flex-wrap: wrap;
+`;
+
+const MapLink = styled(CommentLink)`
+  align-items: flex-start;
+`;
+
+const MapIcon = styled(SimpleLineIcon)`
+  font-size: 24px;
+  color: #ff6c00;
+`;
+
+const LocationName = styled(Text)`
+  margin-left: 10px;
+  padding-right: 15px;
 `;

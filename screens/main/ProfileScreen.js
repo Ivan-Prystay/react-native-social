@@ -82,103 +82,66 @@ export default function ProfileScreen({ navigation }) {
       <StatusBar />
       <Container>
         <BackgroundImage source={require("../../assets/images/photo_bg.png")}>
-          <ProfileContainer>
-            <WrapAvatar>
-              {avatarURL !== "" ? (
-                <Image
-                  source={{ uri: avatar }}
-                  style={{ height: 120, borderRadius: 8 }}
-                ></Image>
-              ) : null}
-            </WrapAvatar>
-            <View
-              style={{
-                marginTop: 20,
-                alignItems: "flex-end",
-                paddingRight: 24,
-              }}
-            >
-              <ButtonOut />
-            </View>
-            <ProfileTitle hasPosts={posts.length > 0}>{nickname}</ProfileTitle>
-          </ProfileContainer>
-          {posts.length > 0 && (
-            <FlatList
-              contentContainerStyle={{
-                backgroundColor: "#F6F6F6",
-              }}
-              data={posts}
-              keyExtractor={(item, id) => id.toString()}
-              renderItem={({ item }) => (
-                <View>
-                  <Image
-                    source={{ uri: item.photo }}
-                    style={{
-                      height: 240,
-                      marginHorizontal: 10,
-                      marginTop: 10,
-                      padding: 25,
-                      borderWidth: 3,
-                      borderRadius: 45,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      marginVertical: 8,
-                      textAlign: "center",
-                      fontWeight: "500",
-                      fontSize: 20,
-                    }}
-                  >
-                    {item.title.name}
-                  </Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-around",
-                      marginBottom: 16,
-                    }}
-                  >
-                    <TouchableOpacity
-                      style={{ flexDirection: "row" }}
-                      onPress={() =>
-                        navigation.navigate("Comments", {
-                          id: item.id,
-                          photo: item.photo,
-                        })
-                      }
-                    >
-                      <FontAwesomeIcon
-                        name="comment"
-                        color="#FF6C00"
-                        style={{
-                          marginRight: 10,
-                          fontSize: 32,
-                        }}
-                      />
-                      <Text style={{ marginRight: 10 }}>
-                        {commentsCount[item.id] || 0}
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={{ flexDirection: "row" }}
-                      onPress={() => navigation.navigate("Map", { item })}
-                      disabled={!item.location}
-                    >
-                      <SimpleLineIcon
-                        name="location-pin"
-                        size={24}
-                        color="#BDBDBD"
-                      />
-                      <Text style={{ marginLeft: 10 }}>
-                        {`${item.title.locationName.country}`}
-                      </Text>
-                    </TouchableOpacity>
+          <View>
+            <ProfileContainer>
+              <WrapAvatar>
+                {avatarURL !== "" ? (
+                  <ImageAvatar source={{ uri: avatar }}></ImageAvatar>
+                ) : null}
+              </WrapAvatar>
+
+              <WrapButtonOut>
+                <ButtonOut />
+              </WrapButtonOut>
+              <ProfileTitle hasPosts={posts.length > 0}>
+                {nickname}
+              </ProfileTitle>
+            </ProfileContainer>
+
+            {posts.length > 0 && (
+              <FlatList
+                contentContainerStyle={{
+                  backgroundColor: "#F6F6F6",
+                }}
+                data={posts}
+                keyExtractor={(item, id) => id.toString()}
+                renderItem={({ item }) => (
+                  <View>
+                    <PhotoPost source={{ uri: item.photo }} />
+                    <PostTitle>{item.title.name}</PostTitle>
+                    <PostDescription>
+                      <CommentsLink
+                        onPress={() =>
+                          navigation.navigate("Comments", {
+                            id: item.id,
+                            photo: item.photo,
+                          })
+                        }
+                      >
+                        <CommentIcon name="comment" />
+
+                        <CommentsCountWrap>
+                          <CommentsCount>
+                            {commentsCount[item.id] || 0}
+                          </CommentsCount>
+                        </CommentsCountWrap>
+                      </CommentsLink>
+
+                      <MapLink
+                        onPress={() => navigation.navigate("Map", { item })}
+                        disabled={!item.location}
+                      >
+                        <MapIcon name="location-pin" />
+                        <LocationName>
+                          {`${item.title.locationName.country}`}
+                        </LocationName>
+                      </MapLink>
+                    </PostDescription>
                   </View>
-                </View>
-              )}
-            />
-          )}
+                )}
+              />
+            )}
+          </View>
         </BackgroundImage>
       </Container>
     </>
@@ -194,6 +157,7 @@ const BackgroundImage = styled(ImageBackground)`
   flex: 1;
   justify-content: flex-end;
   background-size: cover;
+  padding-top: 185px;
 `;
 
 const WrapAvatar = styled(View)`
@@ -208,7 +172,6 @@ const WrapAvatar = styled(View)`
 `;
 
 const ProfileContainer = styled(View)`
-  margin-top: 120px;
   background-color: #fff;
   border-top-left-radius: 25px;
   border-top-right-radius: 25px;
@@ -222,4 +185,73 @@ const ProfileTitle = styled(Text)`
   color: #212121;
   margin-top: 32px;
   margin-bottom: ${(props) => (props.hasPosts ? "0px" : "50px")};
+`;
+
+const ImageAvatar = styled(Image)`
+  height: 120px;
+  border-radius: 8px;
+`;
+
+const WrapButtonOut = styled(View)`
+  margin-top: 20px;
+  align-items: flex-end;
+  padding-right: 24px;
+`;
+
+const PhotoPost = styled(Image)`
+  height: 240px;
+  margin: 0 10px;
+  margin-top: 10px;
+  padding: 25px;
+  border-width: 3px;
+  border-radius: 45px;
+`;
+
+const PostTitle = styled.Text`
+  margin: 8px 0;
+  text-align: center;
+  font-weight: 500;
+  font-size: 20px;
+`;
+
+const PostDescription = styled(View)`
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 16px;
+`;
+
+const CommentsLink = styled(TouchableOpacity)`
+  flex-direction: row;
+  align-items: center;
+`;
+
+const CommentIcon = styled(FontAwesomeIcon)`
+  margin-right: 10px;
+  font-size: 22px;
+  color: #ff6c00;
+`;
+
+const CommentsCountWrap = styled(View)`
+  border-radius: 30px;
+  background-color: #ff6c00;
+  margin-right: 20px;
+  padding: 0 5px;
+`;
+
+const CommentsCount = styled(Text)`
+  color: white;
+`;
+
+const MapLink = styled(CommentsLink)`
+  align-items: flex-start;
+`;
+
+const MapIcon = styled(SimpleLineIcon)`
+  font-size: 24px;
+  color: #ff6c00;
+`;
+
+const LocationName = styled(Text)`
+  margin-left: 10px;
+  padding-right: 15px;
 `;

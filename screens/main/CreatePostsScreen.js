@@ -3,8 +3,7 @@ import { useIsFocused } from "@react-navigation/native";
 
 import { useSelector } from "react-redux";
 
-import styled from "styled-components/native";
-
+import { styled } from "styled-components/native";
 import * as Location from "expo-location";
 import { Camera } from "expo-camera";
 
@@ -209,16 +208,7 @@ export default function CreatePostsScreen({ navigation }) {
                     }))
                   }
                 />
-                <Text
-                  style={{
-                    fontSize: 18,
-                    marginLeft: 10,
-                    borderBottomColor: "grey",
-                    borderBottomWidth: 1,
-                    paddingBottom: 7,
-                    color: `${state.locationName ? "black" : "grey"}`,
-                  }}
-                >
+                <LocationText location={state.locationName}>
                   <SimpleLineIcon
                     name="location-pin"
                     size={24}
@@ -227,7 +217,7 @@ export default function CreatePostsScreen({ navigation }) {
                   {state.locationName
                     ? `${country}, ${region}, ${city}`
                     : "Location..."}
-                </Text>
+                </LocationText>
                 <SendPhotoBtn
                   onPress={sendPhoto}
                   disabled={
@@ -278,6 +268,15 @@ const SnapBtn = styled(TouchableOpacity)`
   justify-content: center;
   align-items: center;
   background-color: ${({ photo }) => (photo ? "#FFFFFF4D" : "#ffffff")};
+`;
+
+const LocationText = styled(Text)`
+  font-size: 18px;
+  margin-left: 10px;
+  border-bottom-width: 1px;
+  border-bottom-color: grey;
+  padding-bottom: 7px;
+  color: ${(props) => (props.location ? "black" : "grey")};
 `;
 
 const SendPhotoBtn = styled(TouchableOpacity)`
