@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useIsFocused } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
 
 import { useSelector } from "react-redux";
 
@@ -21,6 +22,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  Button,
 } from "react-native";
 
 //  Firebase
@@ -89,6 +91,29 @@ export default function CreatePostsScreen({ navigation }) {
       setLocation(location);
     } catch (error) {
       console.log("error: ", error.message);
+    }
+  };
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [3, 4],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+
+      let location = await Location.getCurrentPositionAsync();
+      const currentLocation = await Location.reverseGeocodeAsync(
+        location.coords
+      );
+      const { country, region, city, subregion } = currentLocation[0];
+      setState((prevState) => ({
+        ...prevState,
+        locationName: { country, region, city, subregion },
+      }));
+      setLocation(location);
     }
   };
 
@@ -184,19 +209,43 @@ export default function CreatePostsScreen({ navigation }) {
                   </SnapBtn>
                 </CameraContainer>
               )}
-              {photo ? (
-                <TouchableOpacity
-                  onPress={() => (setPhoto(null), setState(initialState))}
-                >
-                  <Text>Edit photo {isoString}</Text>
-                </TouchableOpacity>
-              ) : (
-                <TouchableOpacity
-                  onPress={() => (setPhoto(null), setState(initialState))}
-                >
-                  <Text>Dowload photo</Text>
-                </TouchableOpacity>
-              )}
+
+              <View style={{ flex: 1, alignItems: "center" }}>
+                {photo ? (
+                  <TouchableOpacity
+                    onPress={() => (setPhoto(null), setState(initialState))}
+                  >
+                    <Text
+                      style={{
+                        flex: 1,
+                        backgroundColor: "orange",
+                        borderRadius: 50,
+                        width: 190,
+                        textAlign: "center",
+                        fontSize: 24,
+                      }}
+                    >
+                      Edit photo
+                    </Text>
+                    <Text>{isoString}</Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity onPress={pickImage}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        backgroundColor: "orange",
+                        borderRadius: 50,
+                        width: 190,
+                        textAlign: "center",
+                        fontSize: 24,
+                      }}
+                    >
+                      Dowload photo
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
               <View>
                 <Input
                   value={state.name}

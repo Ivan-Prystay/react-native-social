@@ -129,12 +129,13 @@ const TitleScreen = styled(Text)`
 `;
 
 const PostPhoto = styled(Image)`
-  height: 350px;
   margin: 0 10px;
   margin-top: 10px;
   padding: 25px;
   border-width: 3px;
   border-radius: 45px;
+  height: 350px;
+  aspect-ratio: 1;
 `;
 
 const PostDiscription = styled(View)`

@@ -1,5 +1,3 @@
-import styled from "styled-components/native";
-
 import MapView, { Marker } from "react-native-maps";
 export default function MapScreen({ route }) {
   const { latitude, longitude } = route.params.item?.location || {};
