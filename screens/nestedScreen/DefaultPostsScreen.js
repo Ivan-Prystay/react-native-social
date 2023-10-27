@@ -80,7 +80,7 @@ export default function DefaultPostsScreen({ navigation }) {
             <View>
               <PostPhoto source={{ uri: item.photo }} />
 
-              <PostDiscription>
+              <PostDescription>
                 <CommentLink
                   onPress={() =>
                     navigation.navigate("Comments", {
@@ -107,7 +107,7 @@ export default function DefaultPostsScreen({ navigation }) {
                     {`${item.title.locationName.country}, ${item.title.locationName.region}`}
                   </LocationName>
                 </MapLink>
-              </PostDiscription>
+              </PostDescription>
             </View>
           )}
         />
@@ -134,11 +134,10 @@ const PostPhoto = styled(Image)`
   padding: 25px;
   border-width: 3px;
   border-radius: 45px;
-  height: 350px;
   aspect-ratio: 1;
 `;
 
-const PostDiscription = styled(View)`
+const PostDescription = styled(View)`
   flex: 1;
   flex-direction: row;
   padding: 5px 10px 0;

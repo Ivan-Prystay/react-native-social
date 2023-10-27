@@ -22,7 +22,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
-  Button,
 } from "react-native";
 
 //  Firebase
@@ -241,7 +240,7 @@ export default function CreatePostsScreen({ navigation }) {
                         fontSize: 24,
                       }}
                     >
-                      Dowload photo
+                      Download photo
                     </Text>
                   </TouchableOpacity>
                 )}
