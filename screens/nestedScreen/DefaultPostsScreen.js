@@ -73,13 +73,12 @@ export default function DefaultPostsScreen({ navigation }) {
         {/* <Image source={{ uri: avatarURL }}></Image>
         <Text>{nickname}</Text> */}
         <FlatList
-          contentContainerStyle={{ paddingBottom: 60 }} // Застосування підсумкового розрахунку
+          contentContainerStyle={{ paddingBottom: 60 }}
           data={posts}
           keyExtractor={(item, id) => id.toString()}
           renderItem={({ item }) => (
-            <View>
+            <View style={{ marginTop: 5 }}>
               <PostPhoto source={{ uri: item.photo }} />
-
               <PostDescription>
                 <CommentLink
                   onPress={() =>
@@ -90,7 +89,6 @@ export default function DefaultPostsScreen({ navigation }) {
                   }
                 >
                   <CommentIcon name="comment" color="#FF6C00" />
-
                   <CommentsCountWrap>
                     <CommentsCount>{commentsCount[item.id] || 0}</CommentsCount>
                   </CommentsCountWrap>
