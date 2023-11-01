@@ -157,7 +157,7 @@ const BackgroundImage = styled(ImageBackground)`
   flex: 1;
   justify-content: flex-end;
   background-size: cover;
-  padding-top: 185px;
+  padding-top: 225px;
 `;
 
 const WrapAvatar = styled(View)`
@@ -208,8 +208,8 @@ const PhotoPost = styled(Image)`
 `;
 
 const PostTitle = styled.Text`
+  padding-left: 30px;
   margin: 8px 0;
-  text-align: center;
   font-weight: 500;
   font-size: 20px;
 `;
@@ -254,4 +254,5 @@ const MapIcon = styled(SimpleLineIcon)`
 const LocationName = styled(Text)`
   margin-left: 10px;
   padding-right: 15px;
+  text-decoration: underline;
 `;

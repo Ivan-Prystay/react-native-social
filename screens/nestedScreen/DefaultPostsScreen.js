@@ -13,14 +13,10 @@ import FeatherIcon from "react-native-vector-icons/Fontisto";
 
 import { db } from "../../firebase/config";
 import { collection, onSnapshot, getDocs, doc } from "firebase/firestore";
-// import { useSelector } from "react-redux";
 
 export default function DefaultPostsScreen({ navigation }) {
   const [posts, setPosts] = useState([]);
   const [commentsCount, setCommentsCount] = useState({});
-
-  // const { nickname, avatarURL } = useSelector((state) => state.auth);
-  // useSelector;
 
   const getAllPosts = async () => {
     const collectionRef = collection(db, "posts");
@@ -70,14 +66,12 @@ export default function DefaultPostsScreen({ navigation }) {
       <StatusBar />
       <Container>
         <TitleScreen>Posts</TitleScreen>
-        {/* <Image source={{ uri: avatarURL }}></Image>
-        <Text>{nickname}</Text> */}
         <FlatList
           contentContainerStyle={{ paddingBottom: 60 }}
           data={posts}
           keyExtractor={(item, id) => id.toString()}
           renderItem={({ item }) => (
-            <View style={{ marginTop: 5 }}>
+            <View>
               <PostPhoto source={{ uri: item.photo }} />
               <PostDescription>
                 <CommentLink
@@ -127,9 +121,8 @@ const TitleScreen = styled(Text)`
 `;
 
 const PostPhoto = styled(Image)`
-  margin: 0 10px;
-  margin-top: 10px;
-  padding: 25px;
+  flex: 1;
+  margin: 10px auto;
   border-width: 3px;
   border-radius: 45px;
   aspect-ratio: 1;
@@ -139,6 +132,7 @@ const PostDescription = styled(View)`
   flex: 1;
   flex-direction: row;
   padding: 5px 10px 0;
+  margin-bottom: 20px;
 `;
 
 const CommentLink = styled(TouchableOpacity)`
@@ -182,4 +176,5 @@ const MapIcon = styled(SimpleLineIcon)`
 const LocationName = styled(Text)`
   margin-left: 10px;
   padding-right: 15px;
+  text-decoration: underline;
 `;
